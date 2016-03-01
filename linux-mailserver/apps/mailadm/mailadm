@@ -1,0 +1,374 @@
+#!/usr/bin/python3
+
+import crypt
+import re
+import sys
+import database
+import argparse
+import os
+import shutil
+import textwrap
+
+
+host = 'localhost'
+dbuser = 'mail'
+dbpass = 'uath7eeGoh'
+dbname = 'mail'
+maildirUID = 107
+maildirGID = 114
+maildirHome = '/var/vmail'
+
+
+def validateAddress(address):
+    '''
+    Validate the email address:
+    it must start with a alphanumeric caracter, it could has others aphanumeric characters
+    or special characters like . _ - followed by the @ and a valid domain.
+    '''
+    if re.match('^[\w]+[\w\._-]*@[\w]+[\w\._-]*\.[a-z]{2,4}$',address):
+        return True
+    else:
+        return False
+
+
+def validateDomain(domain):
+    '''
+    Validate the email domain: 
+    it must start with a alphanumeric caracter and end
+    with dot plus 2, 3 or 4 letters from a to z.
+    Example: xxx.ar - xxx.com - xxx.info
+    '''
+
+    if re.match('[\w]+[\w\._-]*\.[a-z]{2,4}$',domain):
+        return True
+    else:
+        return False
+
+    
+def addDomain(domain, relay=True):
+    '''
+    Add a new domain into the database
+    '''
+    
+    # verify domain name
+    if not validateDomain(domain):
+        print('Error: invalid domain')
+        sys.exit(1)
+
+    # verify domain is not in the database
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+        if db.isDomain(domain):
+            print("Error: domain '{}' is in the database. Nothing to do. Bye!".format(domain))
+            sys.exit(1)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    domainDir = maildirHome + '/' + domain
+
+    # create the maildir home for this domain
+    try:
+        os.makedirs(domainDir)
+        os.chown(domainDir, maildirUID, maildirGID)
+    except PermissionError:
+        print('Error: could not create domain directory. Permission denied. You need root permissions to do this')
+        sys.exit(1)
+    except FileExistsError:
+        print('Error: domain direcotry exits')
+        sys.exit(1)
+
+    # insert domain register into the database
+    db.insertDomain(domain, relay)
+
+    print("Domain '{}' added".format(domain))
+
+
+def delDomain(domain):
+    '''
+    Delete domain from the database
+    '''
+
+    # domain directory to remove
+    domainDir = maildirHome + '/' + domain
+    
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+        if db.isDomain(domain):
+            db.deleteDomain(domain)
+            print('Domain deleted from the database')
+        else:
+            print("Error: domain '{}' is not in the database. Nothing to do. Bye!".format(domain))
+            sys.exit(1)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+    except database.DomainDelError:
+        print('Error: domain in use. First remove all email address in this domain')
+        sys.exit(1)
+
+    # remove domain directory
+    try:
+        os.rmdir(domainDir)
+    except FileNotFoundError:
+        print('Error: could not remove domain directory. Directory was not found')
+        sys.exit(1)
+    except PermissionError:
+        print('Error: could not remove domain directory. Permision denied. You need root permissions to do this')
+        sys.exit(1)
+    except OSError:
+        print('Error: cloud not remove domain directory. Directory not empty')
+        sys.exit(1)
+
+
+
+def addUser(comment, address, password, quota=512, active=True, imap=True, pop3=True):
+    '''
+    Add a new user into the database and create the mailbox
+    Default quota is 512M
+    '''
+
+    # validate email address
+    if not validateAddress(address):
+        print('Error: invalid email address')
+        sys.exit(1)
+
+    # split the local and domain part from the email addrees
+    local, domain = address.split('@')
+    # maildir path 
+    maildir = maildirHome + '/' + domain + '/' + local
+
+    
+    # check if the domain is in the database (the server relays mail to do the domain)
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    if not db.isDomain(domain):
+        print('Warning: email address was not added. This server does not relay mail to {}\n'
+              'First add this domain'.format(domain))
+        sys.exit(1)
+
+    # check if the email address is already in use
+    if db.isAddress(address):
+        print("Error: email address '{}' is in the database. Nothing to do. Bye!".format(address))
+        sys.exit(1)
+
+    # create user maildir
+    try:
+        os.mkdir(maildir)
+        os.mkdir(maildir + '/' + '.Spam')
+        os.mkdir(maildir + '/' + '.Drafts')
+        os.mkdir(maildir + '/' + '.Archive')
+        os.mkdir(maildir + '/' + '.Sent')
+        os.chown(maildir, maildirUID, maildirGID)
+        os.chown(maildir + '/' + '.Spam', maildirUID, maildirGID)
+        os.chown(maildir + '/' + '.Drafts', maildirUID, maildirGID)
+        os.chown(maildir + '/' + '.Archive', maildirUID, maildirGID)
+        os.chown(maildir + '/' + '.Sent', maildirUID, maildirGID)
+    except FileExistsError:
+        print('Error: clould not create user maildir. Maildir exits')
+        sys.exit(1)
+    except PermissionError:
+        print('Error: clould not create user maildir. Permision denied. You need root permissions to do this')
+        sys.exit(1)
+
+
+    # salted password hashing
+    hashedPassword = crypt.crypt(password, crypt.mksalt(crypt.METHOD_MD5))
+
+    # finally, insert the new user into the database
+    db.insertUser(comment, address, hashedPassword, domain+'/'+local+'/', quota, active, imap, pop3)
+
+        
+    print('User {} added'.format(address))
+
+
+def delUser(address):
+    '''
+    Remove the user from the database and delete the mailbox
+    '''
+    maildir = maildirHome
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+        if not db.isAddress(address):
+            print("Email address '{}' is not in the database".format(address))
+            sys.exit(1)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    db.deleteUser(address)
+    print("Email address '{}' deleted from the database".format(address))
+
+    # get the maildir path for remove
+    local, domain = address.split('@')
+    maildir = maildirHome + '/' + domain + '/' + local
+
+    # avoid remove the complete domain home
+    if not local:
+        print('Error!')
+        sys.exit(1)
+    
+    try:
+        shutil.rmtree(maildir)
+    except FileNotFoundError:
+        print('Error: clould not delete user maildir. Maildir not found')
+        sys.exit(1)
+    except PermissionError:
+        print('Error: clould not delete user maildir. Permision denied. You need root permissions to do this')
+        sys.exit(1)
+
+    print('Maildir removed')
+
+
+def modUser(address, password, quota):
+    '''
+    Modify user's parameters: password and quota
+    '''
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    # check if the user exists in the database
+    if not db.isAddress(address):
+        print("User '{}' is not in the database".format(address))
+        sys.exit(1)
+
+    # modify user's password
+    if password:
+        # salted password hashing
+        hashedPassword = crypt.crypt(password, crypt.mksalt(crypt.METHOD_MD5))
+
+        db.modPassword(address, hashedPassword)
+        print("Password updated for '{}'".format(address))
+
+    # modify user's quota
+    if quota:
+        db.modQuota(address, quota)
+        print("Quota updated for '{}'".format(address))
+
+def showAlias(recipient):
+    '''
+    Print a recipient alias
+    '''
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+        alias = db.getAlias(recipient)
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    if alias: # if the recipient has an alias
+        # print idented the recipient alias/aliases
+        print('{}:\n{}'.format(recipient, '-'*len(recipient)))
+        for address in alias.split(' '):
+            print(address)
+
+    else:
+        print('Recipient not found')
+        sys.exit(1)
+
+def showAliases():
+    '''
+    Print all recipient aliases
+    '''
+    try:
+        db = database.DataBase(host, dbuser, dbpass, dbname)
+        aliases = db.getAliases()
+    except database.DBConnError:
+        print('Error: unable to connect to the database')
+        sys.exit(1)
+
+    if aliases:
+        for recipient, destination in aliases:
+            print('{} -> {}\n'.format(recipient,destination))
+    else:
+        print('There are not aliases')
+
+
+
+
+## parse input arguments and options
+parser = argparse.ArgumentParser(description='A simple mail admin tool')
+subparser = parser.add_subparsers(dest='option')
+# Subparser: user-add
+parser_user_add = subparser.add_parser('user-add', help='Add a new email acount')
+parser_user_add.add_argument('address')
+parser_user_add.add_argument('-c', '--comment', dest='comment', required=True, help='Real user name')
+parser_user_add.add_argument('-p', '--password', dest='password', required=True, help='Plain text password')
+parser_user_add.add_argument('-q', '--quota', dest='quota', type=int, required=False, default=512, help='Mailbox quota in MB')
+parser_user_add.add_argument('--no-imap', dest='imap', action='store_false', required=False, help='Deny IMAP')
+parser_user_add.add_argument('--no-pop3', dest='pop3', action='store_false', required=False, help='Deny POP3')
+parser_user_add.add_argument('--no-active', dest='active', action='store_false', required=False, help='No active account')
+# subparser: domain-add
+parser_domain_add = subparser.add_parser('domain-add', help='Add a new domains. The mail server will relay on this domain')
+parser_domain_add.add_argument('domain')
+parser_domain_add.add_argument('--no-relay', dest='relay', action='store_false', required=False, help='No relay on this domain')
+# subparser: domain-del
+parser_domain_del = subparser.add_parser('domain-del', help='Delete a domain from the database')
+parser_domain_del.add_argument('domain')
+# subparser: user-del
+parser_user_del = subparser.add_parser('user-del', help='Delete an user acount')
+parser_user_del.add_argument('address')
+# subparser: user-mod
+parser_user_mod = subparser.add_parser('user-mod', help='Modify an user acount')
+parser_user_mod.add_argument('address')
+parser_user_mod.add_argument('-p', '--password', dest='password', required=False, help='Plain text password')
+parser_user_mod.add_argument('-q', '--quota', dest='quota', required=False, help='Mailbox quota in MB')
+# subparser: alias-show
+parser_alias_show = subparser.add_parser('alias-show', help='Show alias list')
+parser_alias_show.add_argument('recipient')
+# subparser: alias-show-all
+parser_alias_show_all = subparser.add_parser('alias-show-all', help='Show a list of all aliases')
+
+
+
+
+
+# arguments dictionary
+arg = vars(parser.parse_args())
+
+if arg['option'] == 'user-add':
+
+    comment = arg['comment']
+    address = arg['address']
+    password = arg['password']
+    quota = arg['quota']
+    imap = arg['imap']
+    pop3 = arg['pop3']
+    active = arg['active']
+
+    addUser(comment, address, password, quota, active, imap, pop3)
+
+elif arg['option'] == 'domain-add':
+    domain = arg['domain']
+    relay = arg['relay']
+
+    addDomain(domain, relay)
+
+elif arg['option'] == 'domain-del':
+    domain = arg['domain']
+    delDomain(domain)
+
+elif arg['option'] == 'user-del':
+    address = arg['address']
+    delUser(address)
+
+elif arg['option'] == 'user-mod':
+    address = arg['address']
+    password = arg['password']
+    quota = arg['quota']
+    modUser(address, password, quota)
+
+elif arg['option'] == 'alias-show':
+    recipient = arg['recipient']
+    showAlias(recipient)
+
+elif arg['option'] == 'alias-show-all':
+    showAliases()
+
