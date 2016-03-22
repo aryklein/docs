@@ -371,13 +371,12 @@ Move the the following files into */etc/postfix/certs*: ca.crt, server.crt, serv
 Add the following parameters to the `main.cf`:
 
 ```
+smtpd_tls_security_level = may
 smtpd_tls_loglevel = 1
-smtpd_use_tls = yes
 smtp_tls_note_starttls_offer = yes
 smtpd_tls_cert_file = /etc/postfix/certs/server.crt
 smtpd_tls_key_file = /etc/postfix/certs/server.key
 smtpd_tls_CAfile = /etc/postfix/certs/ca.crt
-smtpd_use_tls = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
@@ -1349,7 +1348,7 @@ And the warning bash script could be like this:
 PERCENT=$1
 USER=$2
 cat << EOF | /usr/lib/dovecot/dovecot-lda -d $USER -o "plugin/quota=maildir:User quota:noenforcing"
-From: postmaster@aryklein.capitalinasdc.com
+From: postmaster@example.org
 Subject: Mailbox space warning
 
 Your mailbox is now $PERCENT% full.
@@ -1364,7 +1363,7 @@ So if you use dovecot-lda, to work you should configure the **postmaster_address
 
 Restart Dovecot service
 
-##Enhances
+## Enhances
 
 **Submission port**
 
@@ -1486,6 +1485,34 @@ $ sudo ln -s /usr/local/bin/last_login.sh /usr/local/bin/last_login_pop3.sh
 
 Restart Dovecot service and check the insertion in the database
 
+
+## Setting Postfix to encrypt all outgoing messages when talking to other MTA
+The SMTP standard sends email without using encryption or authentication. By default Postfix send all outgoing message without
+using ecryption. So every message you send is exposed.
+
+This settings only protect emails while travelling between your MTA to others MTAs that support STARTTLS smtp extension, like
+Gmail, Hotmail, Yahoo, etc.
+
+
+The STARTTLS SMTP extension is a TLS (SSL) layer on top of the SMTP connection.
+While it protects traffic from being sniffed during transmission, it is technically not encryption of emails because the content
+of messages is revealed to, and can be altered by, intermediate email relays. In other words, the encryption takes place between
+individual SMTP relays, not between the sender and the recipient. When both relays support STARTTLS, it may be used regardless of
+whether the email's contents are encrypted using another protocol.
+
+I will assume that you have already (in a previous step) created the Postfix key and the certificate and it was signed by the CA.
+Now it is time to make sure messages are encrypted when sending them to other email servers.
+
+Edit ```main.cf``` and add the following settings:
+
+```
+# Use TLS when a remote SMTP server announces STARTTLS support, otherwise send the mail in the clear
+smtp_tls_security_level = may
+smtp_tls_loglevel = 1
+```
+
+If you don't encrypt outgoing message, you can see in Gmail this warning:
+![Alt text](images/encrypt-warning.png?raw=true "MTA did not encrypt this message")
 
 ## Secondary MX
 
