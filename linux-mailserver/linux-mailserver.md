@@ -1513,7 +1513,7 @@ smtp_tls_loglevel = 1
 
 If you don't encrypt outgoing message, you can see in Gmail this warning:
 
-![Alt text](images/encrypt-warning.png?raw=true "MTA did not encrypt this message" =250x)
+![Alt text](images/encrypt-warning.png?raw=true "MTA did not encrypt this message")
 
 
 ## Secondary MX
