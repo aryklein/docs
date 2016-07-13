@@ -1760,7 +1760,7 @@ Edit ``main.cf`` and add the following settings:
 
 If you don't encrypt outgoing message, you can see in Gmail this warning:
 
-.. image:: /images/how-to-install-and-setup-a-powerful-mail-server-on-linux/encrypt-warning.png
+.. image:: images/encrypt-warning.png
 
 |
 
