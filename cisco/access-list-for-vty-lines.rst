@@ -1,8 +1,8 @@
-How to add Standard Access Control Lists (ACLs) for VTY lines (Telnet or SSH)
-=============================================================================
+How to add Access Control Lists (ACLs) for VTY lines 
+====================================================
 
-How to create a Extended Access Control List (ACL) using "access-list" IOS command to filter SSH and Telnet traffic
--------------------------------------------------------------------------------------------------------------------
+How to create an Extended Access Control List (ACL) using "access-list" IOS command to filter SSH and Telnet traffic
+--------------------------------------------------------------------------------------------------------------------
 
 **Extended Access List**
 
@@ -13,7 +13,7 @@ The list is walked sequentially, the first statement matched stops the search th
 the action to be taken. Extended access lists can match source and destination addresses as well as different TCP
 and UDP ports. This gives greater flexibility and control over network access.
 
-To configure extended access lists, the command is similar to standard access list, but with more options.
+To configure extended access lists, the command is similar to standard access list, but with more options:
 
 ::
 
@@ -21,8 +21,8 @@ To configure extended access lists, the command is similar to standard access li
     [operator operand] destination-addr [destination wildcard bits] [operator operand] [established]
 
 
-In this example we are going to permit SSH and Telnet only from the admin networks (10.10.10.0/24 and
-172.16.0.0/24), so first of all we have to create the Access List
+In this example we are going to permit SSH and Telnet only from the admin networks (*10.10.10.0/24* and
+*172.16.0.0/24*), so first of all we have to create the access control list
 
 ::
 
@@ -41,7 +41,7 @@ In this example we are going to permit SSH and Telnet only from the admin networ
 Applying the Access Control Lists (ACL) to VTY lines to filter Telnet or SSH traffic
 ------------------------------------------------------------------------------------
 
-The Exteded Access Control List created before can be applied to VTY lines using the IOS command ``access-class``:
+The access control list created before can be applied to VTY lines using the IOS command ``access-class``:
 
 ::
 
@@ -55,6 +55,4 @@ The Exteded Access Control List created before can be applied to VTY lines using
     router(config-line)#access-class 101 in
     router(config-line)#end
     router#
-
-Even, it's possible to create two ACL, one for SSH lines and other for Telnet lines
 
