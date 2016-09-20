@@ -88,9 +88,9 @@ Resource Types
 --------------
 
 Resource Types are single units of configuration composed by:
-* A type (package, service, file, user, mount, exec ...)
-* A title (how is called and referred)
-* Zero or more arguments
+- A type (package, service, file, user, mount, exec ...)
+- A title (how is called and referred)
+- Zero or more arguments
 
 ::
 
@@ -157,3 +157,25 @@ or ``yum install``.
 Resources are abstracted from the underlying OS
 
 Use ``puppet resource`` to interrogate the RAL:
+
+::
+    puppet resource user
+    puppet resource user root
+    puppet resource service
+    puppet resource service ssh
+
+Or to directly modify resources:
+
+::
+
+    # puppet resource service ssh ensure=running enable=true
+    # systemctl is-enable ssh
+    # puppet resource service ssh ensure=running enable=false
+    # puppet resource service ssh
+    # systemctl is-enable ssh
+
+
+Classes - Definition
+--------------------
+Classes are containers of different resources
+
