@@ -1,6 +1,5 @@
-*****************
 Puppet cheat sheet
-*****************
+==================
 
 This is not a HOWTO. It is only a cheat sheet to remember common procedures.
 It only intends to be a personal help guide (for pesonal use). If you are going to
@@ -8,10 +7,10 @@ use it, please take in mind that I am not a Puppet expert. Each item of this che
 sheet was tested on Ubuntu 16.04.
 
 Working with certs
-##################
+------------------
 
 Listing certificates
-********************
+--------------------
 
 On puppet master List certificate requests:
 
@@ -31,7 +30,8 @@ s specified, output is formatted concisely for consumption by a script.
 
 
 Regenerating a Puppet agent certificate
-***************************************
+---------------------------------------
+
 You may encounter a situation in which you need to regenerate a certificate for a Puppet agent node.
 The following steps explain how to regenerate a certificate for a Puppet agent node using PE’s
 built-in certificate authority (CA).
@@ -83,3 +83,77 @@ a new certificate from the CA Puppet master.
 
        # puppet agent --test
 
+
+Resource Types
+--------------
+
+Resource Types are single units of configuration composed by:
+* A type (package, service, file, user, mount, exec ...)
+* A title (how is called and referred)
+* Zero or more arguments
+
+::
+
+    type { 'title':
+      argument  => value,
+      other_arg => value,
+    }
+
+
+Example for a file resource type:
+
+::
+
+    file { 'motd':
+      path    => '/etc/motd',
+      content => 'Tomorrow is another day',
+    }
+
+    
+For the full list of available Types try:
+
+::
+
+    # puppet describe --list
+    # puppet describe file
+
+
+**Examples:**
+
+Installation of OpenSSH package
+
+::
+
+   package { 'openssh':
+     ensure => present,
+   }
+
+Creation of ``/etc/motd`` file:
+
+::
+
+    file { 'motd':
+      path => '/etc/motd',
+    }
+
+Start of *httpd* service:
+
+::
+
+    service { 'httpd':
+      ensure => running,
+      enable => true,
+    }
+
+
+Resource Abstraction Layer
+--------------------------
+The RAL stands for the Resource Abstraction Layer, and it refers to the components of Puppet that
+interact with the system. The RAL provides an abstract concept of something you can manage, and it
+defines concrete ways of managing things. The Puppet RAL is what allows you to write a manifest that
+works on several different platforms without having to remember if you should invoke ``apt-get install```
+or ``yum install``.
+
+Resources are abstracted from the underlying OS
+
+Use ``puppet resource`` to interrogate the RAL:
