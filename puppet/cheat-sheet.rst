@@ -1,6 +1,11 @@
 *****************
-Puppet chet sheet
+Puppet cheat sheet
 *****************
+
+This is not a HOWTO. It is only a cheat sheet to remember common procedures.
+It only intends to be a personal help guide (for pesonal use). If you are going to
+use it, please take in mind that I am not a Puppet expert. Each item of this cheat
+sheet was tested on Ubuntu 16.04.
 
 Working with certs
 ##################
@@ -36,11 +41,11 @@ built-in certificate authority (CA).
 1. **On the Puppet master**, clear the cert for the agent node. Run puppet cert clean <CERTNAME>.
 2. Stop the Puppet agent, MCollective, and pxp-agent services
 
-::
+   ::
 
-    # puppet resource service puppet ensure=stopped
-    # puppet resource service mcollective ensure=stopped
-    # puppet resource service pxp-agent ensure=stopped
+       # puppet resource service puppet ensure=stopped
+       # puppet resource service mcollective ensure=stopped
+       # puppet resource service pxp-agent ensure=stopped
 
 3. Delete the agent’s SSL directory. On *nix nodes, run:
 
