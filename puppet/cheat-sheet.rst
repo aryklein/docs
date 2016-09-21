@@ -125,6 +125,7 @@ Example of a resource is:
 For the full list of available resource types try:
 
 ::
+
     # puppet resource --types
     # puppet describe --list
     # puppet describe file
@@ -171,6 +172,7 @@ Resources are abstracted from the underlying OS
 Use ``puppet resource`` to interrogate the RAL:
 
 ::
+
     puppet resource user
     puppet resource user root
     puppet resource service
@@ -229,6 +231,7 @@ This is an example of a Puppet module directory structure:
 Firs create the structure directory:
 
 ::
+
     # mkdir localusers
     # mkdir {files,manifests,templates,tests}
 
@@ -237,6 +240,7 @@ The **manifests** directory must have a **init.pp** file (called high level clas
 So create a ``manifests/init.pp`` file with the following content:
 
 ::
+
     class localusers {
     }
 
