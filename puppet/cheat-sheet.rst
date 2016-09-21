@@ -87,20 +87,24 @@ a new certificate from the CA Puppet master.
 Resource Types
 --------------
 
-Resource Types are single units of configuration composed by:
+Puppet code is composed primarily of resource declarations. A resource describes
+something about the state of the system, such as a certain user or file should exist,
+or a package should be installed.
+
+Resource types are single units of configuration composed by:
 - A type (package, service, file, user, mount, exec ...)
 - A title (how is called and referred)
 - Zero or more arguments
 
 ::
 
-    type { 'title':
-      argument  => value,
-      other_arg => value,
+    resource_type { 'title':
+      attribute  => value,
+      other_attribute => value,
     }
 
 
-Example for a file resource type:
+Example of a resource is:
 
 ::
 
@@ -109,11 +113,19 @@ Example for a file resource type:
       content => 'Tomorrow is another day',
     }
 
+    user { 'mitchell':
+      ensure     => present,
+      uid        => '1000',
+      gid        => '1000',
+      shell      => '/bin/bash',
+      home       => '/home/mitchell'
+   }
+
     
-For the full list of available Types try:
+For the full list of available resource types try:
 
 ::
-
+    # puppet resource --types
     # puppet describe --list
     # puppet describe file
 
@@ -175,7 +187,70 @@ Or to directly modify resources:
     # systemctl is-enable ssh
 
 
+
+Manifests
+---------
+
+Puppet programs are called manifests. Manifests are composed of puppet code and their filenames
+use the .pp extension. The default main manifest in Puppet installed via apt-get is
+``/etc/puppet/manifests/site.pp`` or ``/etc/puppetlabs/code/environments/production/manifests/site.pp``
+
+
 Classes - Definition
 --------------------
-Classes are containers of different resources
+
+Classes are containers of different resources. They are code blocks that can
+be called in a code elsewhere.
+
+This is a class declaration:
+
+::
+
+    class example_class {
+        ...
+        code
+        ...
+    }
+
+
+Modules Structure
+-----------------
+
+This is an example of a Puppet module directory structure:
+
+- *files*
+- *manifests*: it must exists. It is the place for Puppet module code
+- *templates*
+- *tests*: used for testing in the local machine before appling in puppet agents
+
+
+**Example of a Puppet module**:
+
+Firs create the structure directory:
+
+::
+    # mkdir localusers
+    # mkdir {files,manifests,templates,tests}
+
+The **manifests** directory must have a **init.pp** file (called high level class)
+
+So create a ``manifests/init.pp`` file with the following content:
+
+::
+    class localusers {
+    }
+
+
+Create a new directory: ``manifests/localusers/groups`` and in this directory
+create a file ``wheel.pp:`` with the following content:
+
+::
+
+   class localusers::groups::wheel {
+
+   }
+
+
+check syntax
+puppet parse validate init.pp
 
