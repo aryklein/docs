@@ -287,15 +287,15 @@ and another file ``finance.pp`` with a group named *finance*:
    }
 
 
-It is recommended after editing a ``pp`` file, check the syntax with ``puppet validate xxx.pp``
+It is recommended after editing a ``pp`` file, check the syntax with ``puppet parser validate xxx.pp``
 
 For example:
 
 ::
 
-    # puppet parse validate init.pp
-    # puppet parse validate groups/wheel.pp
-    # puppet parse validate groups/finance.pp
+    # puppet parser validate init.pp
+    # puppet parser validate groups/wheel.pp
+    # puppet parser validate groups/finance.pp
 
 
 Now it's time to test the module in the local machine, before applying it on Puppet nodes.
