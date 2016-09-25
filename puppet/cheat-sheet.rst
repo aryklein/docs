@@ -223,16 +223,18 @@ This is an example of a Puppet module directory structure:
 - *files*
 - *manifests*: it must exists. It is the place for Puppet module code
 - *templates*
-- *tests*: used for testing in the local machine before appling in puppet agents
+- *tests*: used for testing in the local machine before appling in puppet agent nodes
 
 
 **Example of a Puppet module**:
 
-Firs create the structure directory:
+First create the module structure directory:
 
 ::
 
+    # cd modules
     # mkdir localusers
+    # cd localusers
     # mkdir {files,manifests,templates,tests}
 
 The **manifests** directory must have a **init.pp** file (called high level class)
@@ -242,19 +244,79 @@ So create a ``manifests/init.pp`` file with the following content:
 ::
 
     class localusers {
+        user { 'admin':
+                ensure          => present,
+                shell           => '/bin/bash',
+                home            => '/home/admin',
+                gid             => 'wheel',
+                managehome      => true,
+                password        => '$6$wBjx0qjf$vfTbljHXtEci ... T0uwPwXI.'
+        }
+
+        user { 'jdoe':
+                ensure          => present,
+                shell           => '/bin/bash',
+                home            => '/home/jdoe',
+                groups          => ['wheel','finance'],
+                managehome      => true,
+                password        => '$6$wBjx0qjf$vfTbljHXtEci ... T0uwPwXI.'
+        }
+
     }
 
-
-Create a new directory: ``manifests/localusers/groups`` and in this directory
-create a file ``wheel.pp:`` with the following content:
+Create a new directory: ``manifests/localusers/groups``. This directorory is going to have
+all necesary groups. So create a file ``wheel.pp:`` with the following content:
 
 ::
 
    class localusers::groups::wheel {
-
+       group { 'wheel':
+                ensure => present,
+       }
    }
 
 
-check syntax
-puppet parse validate init.pp
+and another file ``finance.pp`` with a group named *finance*:
 
+::
+
+   class localusers::groups::finance {
+          group { 'finance':
+                   ensure => present,
+          }
+   }
+
+
+It is recommended after editing a ``pp`` file, check the syntax with ``puppet validate xxx.pp``
+
+For example:
+
+::
+
+    # puppet parse validate init.pp
+    # puppet parse validate groups/wheel.pp
+    # puppet parse validate groups/finance.pp
+
+
+Now it's time to test the module in the local machine, before applying it on Puppet nodes.
+Here is where the **tests** directory is used.
+
+Inside ``localusers/tests`` directory, create a ``init.pp`` file:
+
+::
+
+    include localusers
+    include localusers::group::wheel
+    include localusers::group::finance
+
+Check the syntax and test it:
+
+::
+
+    # puppet validate localusers/tests/init.pp
+    # puppet apply --noop localusers/tests/init.pp
+    # puppet apply localusers/tests/init.pp
+
+As you can see, Puppet is smart to know that it has to create the **finance** group before
+creating the user **jdoe**, since this user is going to neeed the **finance** group. So
+it is not necesarry to take care about order. Puppet will decide the right order.
