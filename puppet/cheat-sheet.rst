@@ -10,13 +10,13 @@ Working with certs
 ------------------
 
 Listing certificates
---------------------
+````````````````````
 
 On puppet master List certificate requests:
 
 .. code-block:: bash
 
-   $ sudo puppet cert list
+   # puppet cert list
 
 List all signed certificates and unsigned certificate requests. Signed certificates
 are also listed, prefixed by '+', and revoked or invalid certificates are prefixed by '-' 
@@ -26,11 +26,11 @@ s specified, output is formatted concisely for consumption by a script.
 
 .. code-block:: bash
 
-    $ sudo puppet cert list --all
+    # puppet cert list --all
 
 
 Regenerating a Puppet agent certificate
----------------------------------------
+```````````````````````````````````````
 
 You may encounter a situation in which you need to regenerate a certificate for a Puppet agent node.
 The following steps explain how to regenerate a certificate for a Puppet agent node using PE’s
@@ -41,28 +41,28 @@ built-in certificate authority (CA).
 1. **On the Puppet master**, clear the cert for the agent node. Run puppet cert clean <CERTNAME>.
 2. Stop the Puppet agent, MCollective, and pxp-agent services
 
-   ::
+.. code-block:: bash
 
        # puppet resource service puppet ensure=stopped
        # puppet resource service mcollective ensure=stopped
        # puppet resource service pxp-agent ensure=stopped
 
-3. Delete the agent’s SSL directory. On *nix nodes, run:
+3. Delete the agent's SSL directory. On \*nix nodes, run:
 
-   :: 
+.. code-block:: bash
 
        # rm -rf /etc/puppetlabs/puppet/ssl
        # find /etc/puppetlabs/puppet/ssl -name <fqdn>.pem -delete
 
-4. Remove the agent’s cached catalog. On *nix nodes,run:
+4. Remove the agent's cached catalog. On \*nix nodes,run:
    
-   :: 
+.. code-block:: bash
 
        # rm -f /opt/puppetlabs/puppet/cache/client_data/catalog/<CERTNAME>.json.
 
 5. Re-start the Puppet agent and MCollective services.
    
-   ::
+.. code-block:: bash
 
        # puppet resource service puppet ensure=running
        # puppet resource service mcollective ensure=running
@@ -72,14 +72,14 @@ a new certificate from the CA Puppet master.
 
 6. **On the Puppet master** sign each agent node’s certificate request.
 
-   ::
+.. code-block:: bash
 
        # puppet cert list
        # puppet cert sign <NAME>
 
 7. Test the Puppet agent:
 
-   ::
+.. code-block:: bash
 
        # puppet agent --test
 
@@ -119,7 +119,7 @@ Example of a resource is:
       gid        => '1000',
       shell      => '/bin/bash',
       home       => '/home/mitchell'
-   }
+    }
 
     
 For the full list of available resource types try:
@@ -131,9 +131,7 @@ For the full list of available resource types try:
     # puppet describe file
 
 
-**Examples:**
-
-Installation of OpenSSH package
+**Example:** Installation of OpenSSH package
 
 ::
 
@@ -171,16 +169,16 @@ Resources are abstracted from the underlying OS
 
 Use ``puppet resource`` to interrogate the RAL:
 
-::
+.. code-block:: bash
 
-    puppet resource user
-    puppet resource user root
-    puppet resource service
-    puppet resource service ssh
+    # puppet resource user
+    # puppet resource user root
+    # puppet resource service
+    # puppet resource service ssh
 
 Or to directly modify resources:
 
-::
+.. code-block:: bash
 
     # puppet resource service ssh ensure=running enable=true
     # systemctl is-enable ssh
@@ -195,7 +193,47 @@ Manifests
 
 Puppet programs are called manifests. Manifests are composed of puppet code and their filenames
 use the .pp extension. The default main manifest in Puppet installed via apt-get is
-``/etc/puppet/manifests/site.pp`` or ``/etc/puppetlabs/code/environments/production/manifests/site.pp``
+``/etc/puppetlabs/code/environments/production/manifests/site.pp``
+
+
+Environments
+------------
+Environments are isolated groups of Puppet agent nodes. A Puppet master server can serve each environment
+with completely different main manifests and modulepaths. This frees you to use different versions of the
+same modules for different populations of nodes, which is useful for testing changes to your Puppet code 
+before implementing them on production machines. (You could also do this by running a separate Puppet master
+for testing, but using environments is often easier.)
+
+Structure of an environment
+```````````````````````````
+An environment is just a directory (in Puppet master) that follows a few conventions:
+
+- The directory name is the environment name.
+- It must be located on the Puppet master server in one of the ``environmentpath`` directories, usually ``$codedir/environments``
+- It should contain a ``modules`` directory. If present, it will become part of the environment’s default modulepath.
+- It should contain a ``manifests`` directory, which will be the environment’s default main manifest.
+- It may contain an ``environment.conf`` file, which can locally override several settings, including ``modulepath`` and ``manifest``.
+
+An example for creating a ``testing`` enviroment is:
+
+.. code-block:: bash
+
+    # cp -r /etc/puppetlabs/code/environments/production /etc/puppetlabs/code/environments/testing
+
+
+**Assigning environments via the agent's config file**:
+
+In ``puppet.conf`` on each agent node, you can set the environment setting in either the agent or main config section.
+When that node requests a catalog from the Puppet master, it will request that environment
+
+::
+
+    [main]
+    certname = agent01.example.com
+    server = puppet
+    environment = testing
+    runinterval = 1h
+
 
 
 Classes - Definition
