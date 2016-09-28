@@ -358,3 +358,32 @@ Check the syntax and test it:
 As you can see, Puppet is smart to know that it has to create the **finance** group before
 creating the user **jdoe**, since this user is going to neeed the **finance** group. So
 it is not necesarry to take care about order. Puppet will decide the right order.
+
+
+Case Statements
+---------------
+
+::
+
+    case $osfamily {
+        'RedHat': {
+                $ssh_name = 'sshd'
+         }
+
+         'Debian': {
+                $ssh_name = 'ssh'
+         }
+
+         'default': {
+                Warning('OS family does not match')
+         }
+
+    }
+
+
+    service {'resource-name':
+        name => $ssh_name
+        ensure => running,
+        enable => true,
+    }
+
