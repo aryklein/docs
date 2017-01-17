@@ -451,7 +451,7 @@ You can create relationships between two resources or groups of resources using 
 Case Statements
 ---------------
 
-::
+.. code-block:: ruby
 
     case $osfamily {
         'RedHat': {
