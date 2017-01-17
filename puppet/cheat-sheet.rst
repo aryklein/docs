@@ -360,6 +360,86 @@ creating the user **jdoe**, since this user is going to neeed the **finance** gr
 it is not necesarry to take care about order. Puppet will decide the right order.
 
 
+Relationships and ordering
+--------------------------
+
+By default, Puppet applies resources in the order they’re declared in their manifest.
+However, if a group of resources need be managed in a specific order, you should explicitly
+declare such relationships with relationship metaparameters, chaining **arrows**, and the
+**require** function.
+
+*Note:*
+
+Metaparameters: some attributes in Puppet can be used with every resource type. These are called
+**metaparameters**. They don't map directly to system state; instead, they specify how Puppet
+should act toward the resource.
+
+Relationship metaparameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Puppet uses four metaparameters to establish relationships, and you can set each of them as an attribute
+in any resource. The value of any relationship metaparameter should be a resource reference
+(or array of references) pointing to one or more target resources.
+
+- ```before```: Applies a resource before the target resource.
+- ```require```:  Applies a resource after the target resource.
+- ```notify```: Applies a resource before the target resource. The target resource refreshes if the notifying resource changes.
+- ```subscribe```: Applies a resource after the target resource. The subscribing resource refreshes if the target resource changes.
+
+If two resources need to happen in order, you can either put a ```before``` attribute in the prior one or
+a ```require``` attribute in the subsequent one; either approach creates the same relationship. 
+The same is true of ```notify``` and ```subscribe```.
+
+Example:
+
+::
+    package { 'openssh-server':
+        ensure => present,
+        before => File['/etc/ssh/sshd_config'],
+    }
+
+    file { '/etc/ssh/sshd_config':
+        ensure  => file,
+        mode    => '0600',
+        source  => 'puppet:///modules/sshd/sshd_config',
+        require => Package['openssh-server'],
+    }
+
+
+::
+
+    service { 'sshd':
+        ensure  => running,
+        require => [
+            Package['openssh-server'],
+            File['/etc/ssh/sshd_config'],
+        ],
+    }
+
+    package { 'openssh-server':
+        ensure => present,
+        before => Service['sshd'],
+    }
+
+    file { '/etc/ssh/sshd_config':
+        ensure => file,
+        mode   => '0600',
+        source => 'puppet:///modules/sshd/sshd_config',
+        before => Service['sshd'],
+    }
+
+
+Chaining arrows
+~~~~~~~~~~~~~~~
+
+You can create relationships between two resources or groups of resources using the ```->``` and ```~>``` operators
+
+- ```->```: Applies the resource on the left before the resource on the right (ordering)
+
+- ```~>```: Applies the resource on the left first. If the left-hand resource changes, the right-hand resource will
+  refresh. (notifying)
+
+
 Case Statements
 ---------------
 
