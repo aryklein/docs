@@ -381,18 +381,19 @@ Puppet uses four metaparameters to establish relationships, and you can set each
 in any resource. The value of any relationship metaparameter should be a resource reference
 (or array of references) pointing to one or more target resources.
 
-- ```before```: Applies a resource before the target resource.
-- ```require```:  Applies a resource after the target resource.
-- ```notify```: Applies a resource before the target resource. The target resource refreshes if the notifying resource changes.
-- ```subscribe```: Applies a resource after the target resource. The subscribing resource refreshes if the target resource changes.
+- `before`: Applies a resource before the target resource.
+- `require`:  Applies a resource after the target resource.
+- `notify`: Applies a resource before the target resource. The target resource refreshes if the notifying resource changes.
+- `subscribe`: Applies a resource after the target resource. The subscribing resource refreshes if the target resource changes.
 
-If two resources need to happen in order, you can either put a ```before``` attribute in the prior one or
-a ```require``` attribute in the subsequent one; either approach creates the same relationship. 
-The same is true of ```notify``` and ```subscribe```.
+If two resources need to happen in order, you can either put a `before` attribute in the prior one or
+a `require` attribute in the subsequent one; either approach creates the same relationship. 
+The same is true of `notify` and `subscribe`.
 
 Example:
 
 ::
+
     package { 'openssh-server':
         ensure => present,
         before => File['/etc/ssh/sshd_config'],
