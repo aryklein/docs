@@ -375,7 +375,7 @@ Metaparameters: some attributes in Puppet can be used with every resource type. 
 should act toward the resource.
 
 Relationship metaparameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```````````````````````````
 
 Puppet uses four metaparameters to establish relationships, and you can set each of them as an attribute
 in any resource. The value of any relationship metaparameter should be a resource reference
@@ -430,7 +430,7 @@ Example:
 
 
 Chaining arrows
-~~~~~~~~~~~~~~~
+```````````````
 
 You can create relationships between two resources or groups of resources using the ```->``` and ```~>``` operators
 
