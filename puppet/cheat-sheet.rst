@@ -441,6 +441,13 @@ You can create relationships between two resources or groups of resources using 
   refresh. (notifying)
 
 
+.. code:: ruby
+
+    # ntp.conf is applied first, and notifies the ntpd service if it changes:
+    File['/etc/ntp.conf'] ~> Service['ntpd']
+
+
+
 Case Statements
 ---------------
 
