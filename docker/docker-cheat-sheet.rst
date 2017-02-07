@@ -118,3 +118,31 @@ with an IP address, and a bridge interface to talk to the local host.
 the /bin/bash command.
 
 
+Listing Docker containers
+-------------------------
+
+List running containers
+
+::
+
+    $ docker ps
+
+Show all containers, both stopped and running:
+
+::
+
+   $ docker ps -a
+
+
+Container naming
+----------------
+
+Docker will automatically generate a name at random for each container we create.
+If we want to specify a particular container name in place of the automatically generated name,
+we can do so using the `--name` flag:
+
+::
+
+    $ docker run --name foo_bar_container -i -t ubuntu /bin/bash
+
+
