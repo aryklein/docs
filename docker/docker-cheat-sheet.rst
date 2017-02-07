@@ -141,7 +141,7 @@ Docker will automatically generate a name at random for each container we create
 If we want to specify a particular container name in place of the automatically generated name,
 we can do so using the `--name` flag:
 
-::
+.. code-block:: bash
 
     $ docker run --name foo_bar_container -i -t ubuntu /bin/bash
 
