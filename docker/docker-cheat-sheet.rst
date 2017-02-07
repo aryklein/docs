@@ -24,7 +24,15 @@ Start and Enable the service
     $ sudo systemctl enable docker.service
     $ sudo docker info
 
-If you want to be able to run docker as a regular user, add yourself to the docker group:
+
+The Docker daemon
+~~~~~~~~~~~~~~~~~
+
+By default, the daemon listens on a Unix socket at `/var/run/docker.sock` for incoming Docker
+requests. If a group named docker exists on our system, Docker will apply ownership of the socket
+to that group. Hence, any user that belongs to the docker group can run Docker without needing
+to use the sudo command. So if you want to be able to run docker as a regular user,
+add yourself to the docker group:
 
 ::
 
@@ -47,7 +55,7 @@ A good, modern choice is `overlay2`. To see current storage driver, run:
 
 ::
 
-    # docker info | head
+    $ docker info | head
 
 To set your own choice of storage driver, create a Drop-in snippet and use -s option to dockerd:
 
@@ -59,5 +67,54 @@ To set your own choice of storage driver, create a Drop-in snippet and use -s op
    ExecStart=
    ExecStart=/usr/bin/dockerd -H fd:// -s overlay2
 
-Recall that ExecStart= line is needed to drop inherited ExecStart.
+Recall that `ExecStart=` line is needed to drop inherited ExecStart.
+
+
+Running a container
+-------------------
+
+`docker run` command will create a new container. 
+
+::
+
+    $ docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+
+So for example:
+
+::
+
+    $ docker run -i -t ubuntu /bin/bash
+
+
+**-i**: flag keeps STDIN open from the container, even if we're not attached to it.
+This persistent standard input is one half of what we need for an interactive shell. 
+
+**-t**: flag is the other half and tells Docker to assign a pseudo-tty to the container
+we're about to create.
+
+**ubuntu**: is the *image* to use to create a container. The ubuntu image is a stock image,
+also known as a "base" image, provided by Docker, Inc., on the Docker Hub registry. You can use
+base images like the ubuntu base image (and the similar fedora , debian , centos , etc., images)
+as the basis for building your own images on the operating system of your choice.
+
+
+If Docker can't find the image on your local Docker host, it will
+reach out to the Docker Hub registry run by Docker, Inc., and look for it there.
+Once Docker find the image, it'll download the image and store it on the local host.
+
+You can list all local store image with:
+
+::
+
+   $ docker image
+
+
+Docker uses this image to create a new container inside a filesystem. The container has a network
+with an IP address, and a bridge interface to talk to the local host.
+
+
+**/bin/bash**: is command to run in our new container, in this case launching a Bash shell with
+the /bin/bash command.
+
 
