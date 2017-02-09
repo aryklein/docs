@@ -79,21 +79,19 @@ Running a container
 
     $ docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 
-
 So for example:
 
 ::
 
     $ docker run -i -t ubuntu /bin/bash
 
-
-**-i**: flag keeps STDIN open from the container, even if we're not attached to it.
+* **-i**: flag keeps STDIN open from the container, even if we're not attached to it.
 This persistent standard input is one half of what we need for an interactive shell. 
 
-**-t**: flag is the other half and tells Docker to assign a pseudo-tty to the container
+* **-t**: flag is the other half and tells Docker to assign a pseudo-tty to the container
 we're about to create.
 
-**ubuntu**: is the *image* to use to create a container. The ubuntu image is a stock image,
+* **ubuntu**: is the *image* to use to create a container. The ubuntu image is a stock image,
 also known as a "base" image, provided by Docker, Inc., on the Docker Hub registry. You can use
 base images like the ubuntu base image (and the similar fedora , debian , centos , etc., images)
 as the basis for building your own images on the operating system of your choice.
@@ -108,7 +106,6 @@ You can list all local store image with:
 ::
 
    $ docker image
-
 
 Docker uses this image to create a new container inside a filesystem. The container has a network
 with an IP address, and a bridge interface to talk to the local host.
@@ -141,8 +138,42 @@ Docker will automatically generate a name at random for each container we create
 If we want to specify a particular container name in place of the automatically generated name,
 we can do so using the `--name` flag:
 
-.. code-block:: bash
+::
 
     $ docker run --name foo_bar_container -i -t ubuntu /bin/bash
+
+
+Starting and stopping containers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To start a stopped container:
+
+::
+
+   $ docker start [container_name|container_id] ...
+
+Stop one or more running containers:
+
+::
+
+   $ docker stop [container_name|container_id] ...
+
+
+Attaching to a running containe:   
+
+::
+
+   $ docker attach [container]
+
+
+Daemonized containers
+~~~~~~~~~~~~~~~~~~~~~
+
+Daemonized containers don't have an interactive session. And are ideal for running
+applications and services.
+
+::
+
+    $ docker run --name daemon_container -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 
 
