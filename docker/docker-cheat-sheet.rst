@@ -177,3 +177,62 @@ applications and services.
     $ docker run --name daemon_container -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 
 
+Container logging 
+~~~~~~~~~~~~~~~~~
+
+To see the output of a container, you can run:
+
+::
+
+    $ docker logs [CONTAINER]
+
+
+To see the output added in real-time, use `-f`
+
+::
+
+   $ docker logs -f [CONTAINER]
+
+
+Journald logging driver
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The journald logging driver sends container logs to the systemd journal. Log entries can be retrieved
+using the journalctl command, through use of the journal API, or using the docker logs command.
+
+Configure the default logging driver by passing the --log-driver option to the Docker daemon:
+
+::
+
+    $ dockerd --log-driver=journald
+
+or edit the `/etc/systemd/system/docker.service.d/override.conf` like this:
+
+::
+
+   [Service]
+   ExecStart=
+   ExecStart=/usr/bin/dockerd -H fd:// -s overlay2 --log-driver=journald
+
+
+
+To configure the logging driver for a specific container, use the `--log-driver` flag on the docker run command.
+
+::
+
+   $ docker run --log-driver=journald ...
+   $ sudo journalctl -u docker CONTAINER_NAME=container_name
+
+
+Inspecting the container's process
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To see processes running inside the container:
+
+::
+
+   $ docker top CONTAINER
+
+   $ docker stats
+   $ docker stats CONTAINER
+
