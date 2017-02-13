@@ -143,27 +143,34 @@ we can do so using the `--name` flag:
     $ docker run --name foo_bar_container -i -t ubuntu /bin/bash
 
 
-Starting and stopping containers
---------------------------------
+Starting, stopping and deleting containers
+------------------------------------------
 
 To start a stopped container:
 
 ::
 
-   $ docker start [container_name|container_id] ...
+   $ docker start CONTAINER ...
 
 Stop one or more running containers:
 
 ::
 
-   $ docker stop [container_name|container_id] ...
+   $ docker stop CONTAINER ...
 
 
 Attaching to a running containe:   
 
 ::
 
-   $ docker attach [container]
+    $ docker attach CONTAINER
+
+
+Deleting a container:
+
+::
+
+    $ docker rm CONTAINER
 
 
 Daemonized containers
@@ -235,4 +242,32 @@ To see processes running inside the container:
 
    $ docker stats
    $ docker stats CONTAINER
+
+
+Automatic container restarts
+----------------------------
+
+It is possible to configure Docker to restart automatically a container if it fails
+You have to run the container with the `--restart` flag.
+
+The `--restart` flag checks for the container exit code and makes a decision whether
+or not to restart it. The default behavior is to not restart containers at all.
+
+So for example:
+
+::
+
+    $ docker run --restart=always ...
+
+    
+It will try to restart the container no matter what exit code is returned. Alternatively, we can
+specify a value of `on-failure` which restarts the container if it exits with a non-zero exit code:
+
+::
+
+    $ docker run --restart=on-failure:5 ...
+
+
+It will restart a maximum of 5 times if a non-zero exit code is received.
+
 
