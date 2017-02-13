@@ -26,7 +26,7 @@ Start and Enable the service
 
 
 The Docker daemon
-~~~~~~~~~~~~~~~~~
+-----------------
 
 By default, the daemon listens on a Unix socket at `/var/run/docker.sock` for incoming Docker
 requests. If a group named docker exists on our system, Docker will apply ownership of the socket
@@ -144,7 +144,7 @@ we can do so using the `--name` flag:
 
 
 Starting and stopping containers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 To start a stopped container:
 
@@ -167,7 +167,7 @@ Attaching to a running containe:
 
 
 Daemonized containers
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Daemonized containers don't have an interactive session. And are ideal for running
 applications and services.
@@ -178,7 +178,7 @@ applications and services.
 
 
 Container logging 
-~~~~~~~~~~~~~~~~~
+-----------------
 
 To see the output of a container, you can run:
 
@@ -195,7 +195,7 @@ To see the output added in real-time, use `-f`
 
 
 Journald logging driver
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 The journald logging driver sends container logs to the systemd journal. Log entries can be retrieved
 using the journalctl command, through use of the journal API, or using the docker logs command.
@@ -225,7 +225,7 @@ To configure the logging driver for a specific container, use the `--log-driver`
 
 
 Inspecting the container's process
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------
 
 To see processes running inside the container:
 
