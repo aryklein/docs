@@ -6,8 +6,8 @@ It only intends to be a personal help guide (for pesonal use). If you are going 
 use it, please bear in mind, that I am not a Docker expert :)
 
 
-Instalation
------------
+Instalation and configuration
+-----------------------------
 
 Archlinux:
 ~~~~~~~~~~
@@ -26,7 +26,7 @@ Start and Enable the service
 
 
 The Docker daemon
------------------
+~~~~~~~~~~~~~~~~~
 
 By default, the daemon listens on a Unix socket at `/var/run/docker.sock` for incoming Docker
 requests. If a group named docker exists on our system, Docker will apply ownership of the socket
@@ -39,9 +39,6 @@ add yourself to the docker group:
     $ sudo gpasswd -a user docker
     $ sudo newgrp docker
 
-
-Configuration
--------------
 
 Storage driver
 ~~~~~~~~~~~~~~
@@ -70,8 +67,11 @@ To set your own choice of storage driver, create a Drop-in snippet and use -s op
 Recall that `ExecStart=` line is needed to drop inherited ExecStart.
 
 
+Working with containers
+-----------------------
+
 Running a container
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 `docker run` command will create a new container. 
 
@@ -116,7 +116,7 @@ the /bin/bash command.
 
 
 Listing Docker containers
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List running containers
 
@@ -132,7 +132,7 @@ Show all containers, both stopped and running:
 
 
 Container naming
-----------------
+~~~~~~~~~~~~~~~~
 
 Docker will automatically generate a name at random for each container we create.
 If we want to specify a particular container name in place of the automatically generated name,
@@ -144,7 +144,7 @@ we can do so using the `--name` flag:
 
 
 Starting, stopping and deleting containers
-------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To start a stopped container:
 
@@ -174,7 +174,7 @@ Deleting a container:
 
 
 Daemonized containers
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Daemonized containers don't have an interactive session. And are ideal for running
 applications and services.
@@ -184,8 +184,8 @@ applications and services.
     $ docker run --name daemon_container -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 
 
-Container logging 
------------------
+Container logging
+~~~~~~~~~~~~~~~~~
 
 To see the output of a container, you can run:
 
@@ -202,7 +202,7 @@ To see the output added in real-time, use `-f`
 
 
 Journald logging driver
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The journald logging driver sends container logs to the systemd journal. Log entries can be retrieved
 using the journalctl command, through use of the journal API, or using the docker logs command.
@@ -231,8 +231,8 @@ To configure the logging driver for a specific container, use the `--log-driver`
    $ sudo journalctl -u docker CONTAINER_NAME=container_name
 
 
-Inspecting the container's process
-----------------------------------
+Inspecting processes inside a container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To see processes running inside the container:
 
@@ -245,7 +245,7 @@ To see processes running inside the container:
 
 
 Automatic container restarts
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It is possible to configure Docker to restart automatically a container if it fails
 You have to run the container with the `--restart` flag.
@@ -270,4 +270,16 @@ specify a value of `on-failure` which restarts the container if it exits with a 
 
 It will restart a maximum of 5 times if a non-zero exit code is received.
 
+
+Docker images
+-------------
+
+Listing images
+~~~~~~~~~~~~~~
+
+List images available in the Docker host:
+
+::
+
+    $ docker images
 
