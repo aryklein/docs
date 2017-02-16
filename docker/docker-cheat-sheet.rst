@@ -274,6 +274,23 @@ It will restart a maximum of 5 times if a non-zero exit code is received.
 Docker images
 -------------
 
+Images live inside repositories, and repositories live on registries. The default registry is the public registry
+managed by Docker, Inc., Docker Hub.
+
+Each repository can contain multiple images (e.g., the ubuntu repository contains
+images for Ubuntu 12.04, 12.10, 13.04, 13.10, 14.04, 16.04)
+
+Pulling images
+~~~~~~~~~~~~~~
+
+`docker pull` command pulls down the image from the ubuntu repository to the local host
+
+::
+
+    $ docker pull ubuntu:16.04
+    $ docker pull ubuntu:latest
+
+
 Listing images
 ~~~~~~~~~~~~~~
 
@@ -282,4 +299,22 @@ List images available in the Docker host:
 ::
 
     $ docker images
+
+
+Searching for images
+~~~~~~~~~~~~~~~~~~~~
+To search all of the publicly available images on Docker Hub, run:
+
+::
+
+    $ docker search httpd
+
+
+Building images
+~~~~~~~~~~~~~~~
+
+There are two ways to create personal images in Docker:
+
+- using docker commit
+- using docker build with a Dockerfile
 
