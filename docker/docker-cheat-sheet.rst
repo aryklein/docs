@@ -300,6 +300,7 @@ List images available in the Docker host:
 ::
 
     $ docker images
+    $ docker image ls
 
 
 Searching for images
