@@ -325,3 +325,9 @@ Once we have a Dockerfile we then use the `docker build` command to build a new 
 the instructions in the Dockerfile.
 
 
+Dockerfile Languague
+~~~~~~~~~~~~~~~~~~~~
+
+- FROM: specifies the base image
+- RUN: By default, it executes a command inside a shell using the command wrapper `/bin/sh -c`
+- EXPOSE: tells Docker that the application in this container will use this specific port on the container.
