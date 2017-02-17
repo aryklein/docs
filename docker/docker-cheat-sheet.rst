@@ -105,7 +105,8 @@ You can list all local store image with:
 
 ::
 
-   $ docker image
+   $ docker images
+   $ docker image ls
 
 Docker uses this image to create a new container inside a filesystem. The container has a network
 with an IP address, and a bridge interface to talk to the local host.
