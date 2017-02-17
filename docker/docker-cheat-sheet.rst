@@ -318,3 +318,10 @@ There are two ways to create personal images in Docker:
 - using docker commit
 - using docker build with a Dockerfile
 
+It's not recommended to use the docker commit approach. Instead, it's recommend to
+build images using a definition file called Dockerfile and then `docker build` command.
+The Dockerfile uses a basic DSL (Domain Specific Language) with instructions for building Docker images.
+Once we have a Dockerfile we then use the `docker build` command to build a new image from
+the instructions in the Dockerfile.
+
+
