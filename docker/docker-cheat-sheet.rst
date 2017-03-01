@@ -283,8 +283,7 @@ It still exists in the underlying layer. When a Docker container is deleted, rel
 a fresh container without any of the changes made in the previously running container. Those changes are lost. 
 Docker calls this combination of read-only layers with a read-write layer on top a Union File System.
 
-Taken from here_.
-.. _here: http://container-solutions.com/understanding-volumes-docker/
+Taken from `here <http://container-solutions.com/understanding-volumes-docker/>`_
 
 
 Images live inside repositories, and repositories live on registries. The default registry is the public registry
