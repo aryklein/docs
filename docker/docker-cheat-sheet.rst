@@ -275,6 +275,18 @@ It will restart a maximum of 5 times if a non-zero exit code is received.
 Docker images
 -------------
 
+Docker images are made as a series of read-only layers. When a container starts, Docker takes the
+read-only image and adds a read-write layer on top. If the running container modifies an existing file,
+the file is copied out of the underlying read-only layer and into the top-most read-write layer where the
+changes are applied. The version in the read-write layer hides the underlying file, but does not destroy it.
+It still exists in the underlying layer. When a Docker container is deleted, relaunching the image will start
+a fresh container without any of the changes made in the previously running container. Those changes are lost. 
+Docker calls this combination of read-only layers with a read-write layer on top a Union File System.
+
+Taken from here_.
+.. _here: http://container-solutions.com/understanding-volumes-docker/
+
+
 Images live inside repositories, and repositories live on registries. The default registry is the public registry
 managed by Docker, Inc., Docker Hub.
 
@@ -333,3 +345,8 @@ Dockerfile Languague
 - FROM: specifies the base image
 - RUN: By default, it executes a command inside a shell using the command wrapper `/bin/sh -c`
 - EXPOSE: tells Docker that the application in this container will use this specific port on the container.
+
+(I need to add more info here)
+
+Volumes
+-------
