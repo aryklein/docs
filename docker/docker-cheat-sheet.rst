@@ -347,5 +347,72 @@ Dockerfile Languague
 
 (I need to add more info here)
 
+
 Volumes
 -------
+
+Volumes are directories or files that are outside of the default Union File System and
+exist as normal directories and files on the host filesystem.
+
+Creating volumes
+~~~~~~~~~~~~~~~~
+
+Creating a volume at the run time with `-v` flag:
+
+::
+
+    $ docker run -it --name CONTAINER_NAME -h CONTAINER_HOSTNAME -v /data ubuntu:latest /bin/bash
+    root@CONTAINER_HOSTNAME:/# ls /data
+    root@CONTAINER_HOSTNAME:/#
+
+It will creates a `/data` directory inside the container and this directory will live outside the Union File System
+and directly accessible on the host. Any files that the image held inside the /data  directory will be copied into
+the volume.
+
+The same effect can be achieved using the VOLUME statement in a Dockerfile:
+
+::
+
+   FROM ubuntu:latest
+   VOLUME /data
+
+
+We can know where the volume is on the host by using the `docker inspect` command on the host
+
+::
+
+    $ docker inspect -f "{{json .Mounts}}" CONTAINER_NAME
+
+
+Creating a volume using the `docker volume create` command:
+
+::
+
+   $ docker volume create --name vol-test
+   $ docker volume ls
+   $ docker run -it --name CONTAINER_NAME -h CONTAINER_HOSTNAME -v VOL_NAME:/data ubuntu:latest /bin/bash
+
+
+Another use case for volumes is mounting a specific directory from the host and it that can only be accomplished through
+the -v flag:
+
+::
+
+   $ docker run -v /home/user/data:/data -it -h test-container ubuntu:latest /bin/bash
+
+
+It will mount the `/home/user/data` host directory into the container `/data` directory. It could be useful to share
+files between the container and the host
+
+In order to preserve portability, the host directory for a volume cannot be specified in a Dockerfile because
+the host directory may not be available on all systems.
+
+
+Listing volumes in the host
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   $ docker volume ls
+
+
