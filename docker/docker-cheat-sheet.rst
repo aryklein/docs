@@ -393,8 +393,7 @@ We can know where the volume is on the host by using the `docker inspect` comman
    $ docker run -it --name CONTAINER_NAME -h CONTAINER_HOSTNAME -v VOL_NAME:/data ubuntu:latest /bin/bash
 
 
-Another use case for volumes is mounting a specific directory from the host and it that can only be accomplished through
-the -v flag:
+**Mounting a specific directory from the host using the `-v` flag:**
 
 ::
 
