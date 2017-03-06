@@ -357,7 +357,7 @@ exist as normal directories and files on the host filesystem.
 Creating volumes
 ~~~~~~~~~~~~~~~~
 
-Creating a volume at the run time with `-v` flag:
+**Creating a volume at the run time with `-v` flag:**
 
 ::
 
@@ -365,9 +365,9 @@ Creating a volume at the run time with `-v` flag:
     root@CONTAINER_HOSTNAME:/# ls /data
     root@CONTAINER_HOSTNAME:/#
 
-It will creates a `/data` directory inside the container and this directory will live outside the Union File System
-and directly accessible on the host. Any files that the image held inside the /data  directory will be copied into
-the volume.
+It will creates a docker volume and a `/data` directory inside the container and this directory will live
+outside the Union File System and directly accessible on the host. Any files that the image held inside the
+`/data`  directory will be copied into the volume.
 
 The same effect can be achieved using the VOLUME statement in a Dockerfile:
 
@@ -384,7 +384,7 @@ We can know where the volume is on the host by using the `docker inspect` comman
     $ docker inspect -f "{{json .Mounts}}" CONTAINER_NAME
 
 
-Creating a volume using the `docker volume create` command:
+**Creating a volume using the `docker volume create` command:**
 
 ::
 
