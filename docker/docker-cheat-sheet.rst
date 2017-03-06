@@ -415,3 +415,21 @@ Listing volumes in the host
    $ docker volume ls
 
 
+Sharing data between containers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The argument `--volumes-from` in the docker run command, is used to give volume access to another container
+
+::
+
+    $ docker run -it -h NEWCONTAINER --volumes-from CONTAINER_NAME IMAGE PROC
+    $ docker run -it -h test-container2 --volumes-from test-container1 ubuntu /bin/bash
+
+
+If you want to mount the volume in a different directory inside the container, you should specify with `-v` flag
+the volume_name and the mount point into the container.
+
+::
+
+    $ docker run -it -h NEWCONTAINER -v VOL_ID:/data2 ubuntu /bin/bash
+ 
