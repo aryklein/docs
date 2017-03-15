@@ -166,6 +166,8 @@ Attaching to a running containe:
 
     $ docker attach CONTAINER
 
+You can detach from a container and leave it running using the **CTRL-p CTRL-q** key sequence.
+
 
 Deleting a container:
 
