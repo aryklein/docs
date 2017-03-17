@@ -1,24 +1,26 @@
 Docker cheat sheet
 ==================
 
+.. contents::
+
 This is not a HOWTO. It is only a cheat sheet to remind common procedures.
 It only intends to be a personal help guide (for pesonal use). If you are going to
-use it, please bear in mind, that I am not a Docker expert :)
+use it, please keep in mind, that I am not a Docker expert :)
 
 
-Instalation and configuration
+Installation and configuration
 -----------------------------
 
 Archlinux:
 ~~~~~~~~~~
 
-::
+.. code-block:: bash
 
     $ sudo pacman -S docker
 
 Start and Enable the service
 
-::
+.. code-block:: bash
 
     $ sudo systemctl start docker.service
     $ sudo systemctl enable docker.service
@@ -34,7 +36,7 @@ to that group. Hence, any user that belongs to the docker group can run Docker w
 to use the sudo command. So if you want to be able to run docker as a regular user,
 add yourself to the docker group:
 
-::
+.. code-block:: bash
 
     $ sudo gpasswd -a user docker
     $ sudo newgrp docker
@@ -50,13 +52,13 @@ which is outright terrible on rotating disks. Additionally, `devicemappper` is n
 in production. As Arch linux ships new kernels, there's no point using the compatibility option.
 A good, modern choice is `overlay2`. To see current storage driver, run:
 
-::
+.. code-block:: bash
 
     $ docker info | head
 
 To set your own choice of storage driver, create a Drop-in snippet and use -s option to dockerd:
 
-::
+.. code-block:: bash
 
    /etc/systemd/system/docker.service.d/override.conf
 
@@ -75,13 +77,13 @@ Running a container
 
 `docker run` command will create a new container. 
 
-::
+.. code-block:: bash
 
     $ docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 
 So for example:
 
-::
+.. code-block:: bash
 
     $ docker run -i -t ubuntu /bin/bash
 
@@ -103,7 +105,7 @@ Once Docker find the image, it'll download the image and store it on the local h
 
 You can list all local store image with:
 
-::
+.. code-block:: bash
 
    $ docker images
    $ docker image ls
@@ -121,13 +123,13 @@ Listing Docker containers
 
 List running containers
 
-::
+.. code-block:: bash
 
     $ docker ps
 
 Show all containers, both stopped and running:
 
-::
+.. code-block:: bash
 
    $ docker ps -a
 
@@ -139,7 +141,7 @@ Docker will automatically generate a name at random for each container we create
 If we want to specify a particular container name in place of the automatically generated name,
 we can do so using the `--name` flag:
 
-::
+.. code-block:: bash
 
     $ docker run --name foo_bar_container -i -t ubuntu /bin/bash
 
@@ -149,20 +151,20 @@ Starting, stopping and deleting containers
 
 To start a stopped container:
 
-::
+.. code-block:: bash
 
    $ docker start CONTAINER ...
 
 Stop one or more running containers:
 
-::
+.. code-block:: bash
 
    $ docker stop CONTAINER ...
 
 
 Attaching to a running containe:   
 
-::
+.. code-block:: bash
 
     $ docker attach CONTAINER
 
@@ -171,7 +173,7 @@ You can detach from a container and leave it running using the **CTRL-p CTRL-q**
 
 Deleting a container:
 
-::
+.. code-block:: bash
 
     $ docker rm CONTAINER
 
@@ -182,7 +184,7 @@ Daemonized containers
 Daemonized containers don't have an interactive session. And are ideal for running
 applications and services.
 
-::
+.. code-block:: bash
 
     $ docker run --name daemon_container -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
 
@@ -192,14 +194,14 @@ Container logging
 
 To see the output of a container, you can run:
 
-::
+.. code-block:: bash
 
     $ docker logs [CONTAINER]
 
 
 To see the output added in real-time, use `-f`
 
-::
+.. code-block:: bash
 
    $ docker logs -f [CONTAINER]
 
@@ -212,13 +214,13 @@ using the journalctl command, through use of the journal API, or using the docke
 
 Configure the default logging driver by passing the --log-driver option to the Docker daemon:
 
-::
+.. code-block:: bash
 
     $ dockerd --log-driver=journald
 
 or edit the `/etc/systemd/system/docker.service.d/override.conf` like this:
 
-::
+.. code-block:: bash
 
    [Service]
    ExecStart=
@@ -228,7 +230,7 @@ or edit the `/etc/systemd/system/docker.service.d/override.conf` like this:
 
 To configure the logging driver for a specific container, use the `--log-driver` flag on the docker run command.
 
-::
+.. code-block:: bash
 
    $ docker run --log-driver=journald ...
    $ sudo journalctl -u docker CONTAINER_NAME=container_name
@@ -239,7 +241,7 @@ Inspecting processes inside a container
 
 To see processes running inside the container:
 
-::
+.. code-block:: bash
 
    $ docker top CONTAINER
 
@@ -258,7 +260,7 @@ or not to restart it. The default behavior is to not restart containers at all.
 
 So for example:
 
-::
+.. code-block:: bash
 
     $ docker run --restart=always ...
 
@@ -266,7 +268,7 @@ So for example:
 It will try to restart the container no matter what exit code is returned. Alternatively, we can
 specify a value of `on-failure` which restarts the container if it exits with a non-zero exit code:
 
-::
+.. code-block:: bash
 
     $ docker run --restart=on-failure:5 ...
 
@@ -299,7 +301,7 @@ Pulling images
 
 `docker pull` command pulls down the image from the ubuntu repository to the local host
 
-::
+.. code-block:: bash
 
     $ docker pull ubuntu:16.04
     $ docker pull ubuntu:latest
@@ -310,7 +312,7 @@ Listing images
 
 List images available in the Docker host:
 
-::
+.. code-block:: bash
 
     $ docker images
     $ docker image ls
@@ -320,7 +322,7 @@ Searching for images
 ~~~~~~~~~~~~~~~~~~~~
 To search all of the publicly available images on Docker Hub, run:
 
-::
+.. code-block:: bash
 
     $ docker search httpd
 
@@ -361,7 +363,7 @@ Creating volumes
 
 **Creating a volume at the run time with `-v` flag:**
 
-::
+.. code-block::
 
     $ docker run -it --name CONTAINER_NAME -h CONTAINER_HOSTNAME -v /data ubuntu:latest /bin/bash
     root@CONTAINER_HOSTNAME:/# ls /data
@@ -373,7 +375,7 @@ outside the Union File System and directly accessible on the host. Any files tha
 
 The same effect can be achieved using the VOLUME statement in a Dockerfile:
 
-::
+.. code-block::
 
    FROM ubuntu:latest
    VOLUME /data
@@ -381,14 +383,14 @@ The same effect can be achieved using the VOLUME statement in a Dockerfile:
 
 We can know where the volume is on the host by using the `docker inspect` command on the host
 
-::
+.. code-block:: bash
 
     $ docker inspect -f "{{json .Mounts}}" CONTAINER_NAME
 
 
 **Creating a volume using the `docker volume create` command:**
 
-::
+.. code-block:: bash
 
    $ docker volume create --name vol-test
    $ docker volume ls
@@ -397,7 +399,7 @@ We can know where the volume is on the host by using the `docker inspect` comman
 
 **Mounting a specific directory from the host using the `-v` flag:**
 
-::
+.. code-block:: bash
 
    $ docker run -v /home/user/data:/data -it -h test-container ubuntu:latest /bin/bash
 
@@ -412,7 +414,7 @@ the host directory may not be available on all systems.
 Listing volumes in the host
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+.. code-block:: bash
 
    $ docker volume ls
 
@@ -422,7 +424,7 @@ Sharing data between containers
 
 The argument `--volumes-from` in the docker run command, is used to give volume access to another container
 
-::
+.. code-block:: bash
 
     $ docker run -it -h NEWCONTAINER --volumes-from CONTAINER_NAME IMAGE PROC
     $ docker run -it -h test-container2 --volumes-from test-container1 ubuntu /bin/bash
@@ -431,7 +433,7 @@ The argument `--volumes-from` in the docker run command, is used to give volume 
 If you want to mount the volume in a different directory inside the container, you should specify with `-v` flag
 the volume_name and the mount point into the container.
 
-::
+.. code-block:: bash
 
     $ docker run -it -h NEWCONTAINER -v VOL_ID:/data2 ubuntu /bin/bash
  
