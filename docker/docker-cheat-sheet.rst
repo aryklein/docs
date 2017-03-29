@@ -436,4 +436,24 @@ the volume_name and the mount point into the container.
 .. code-block:: bash
 
     $ docker run -it -h NEWCONTAINER -v VOL_ID:/data2 ubuntu /bin/bash
+    
  
+User-defined networks
+---------------------
+
+You can create your own user-defined networks that better isolate containers. Docker provides some default
+network drivers for creating these networks.
+
+The easiest user-defined network to create is a bridge network. This network is similar to the historical,
+default `docker0` network.
+ 
+.. code-block:: bash
+ 
+    $ docker network create --subnet=172.18.0.0/24 --gateway=172.18.0.1 --driver=bridge my_network
+    $ docker network inspect my_network
+    
+Then you can launch a container in this network, with a fixed-ip using:
+
+.. code-block:: bash
+
+    $ docker run --net my_network --ip 172.18.0.2 ...
