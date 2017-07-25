@@ -236,6 +236,42 @@ When that node requests a catalog from the Puppet master, it will request that e
     environment = testing
     runinterval = 1h
 
+Node definition
+---------------
+
+A node definition or node statement is a block of Puppet code that will only be included in matching nodes’ catalogs.
+This feature allows you to assign specific configurations to specific nodes.
+
+Node definitions should go in the main manifest. The main manifest can be a single file, or a directory containing
+many files.
+
+::
+
+    # <ENVIRONMENTS DIRECTORY>/<ENVIRONMENT>/manifests/site.pp
+    node 'www1.example.com' {
+      include common
+      include apache
+      include squid
+    }
+    node 'db1.example.com' {
+      include common
+      include mysql
+    }
+
+
+In the example above, only ``www1.example.com`` would receive the apache and squid classes, and only ``db1.example.com``
+would receive the mysql class.
+
+Node definitions look like class definitions. The general form of a node definition is:
+
+- The node keyword
+- The name(s) of the node(s), separated by commas (with an optional final trailing comma)
+- An opening curly brace
+- Any mixture of class declarations, variables, resource declarations, collectors, conditional statements,
+  chaining relationships, and functions
+- A closing curly brace
+
+The name **default** (without quotes) is a special value for node names. If no node statement matching a given node can be found, the default node will be used.
 
 
 Classes - Definition
