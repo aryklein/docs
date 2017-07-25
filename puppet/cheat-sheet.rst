@@ -98,7 +98,7 @@ Resource types are single units of configuration composed by:
 - A title (how is called and referred)
 - Zero or more arguments
 
-::
+.. code-block:: ruby
 
     resource_type { 'title':
       attribute  => value,
@@ -108,7 +108,7 @@ Resource types are single units of configuration composed by:
 
 Example of a resource is:
 
-::
+.. code-block:: ruby
 
     file { 'motd':
       path    => '/etc/motd',
@@ -135,7 +135,7 @@ For the full list of available resource types try:
 
 **Example:** Installation of OpenSSH package
 
-::
+.. code-block:: ruby
 
    package { 'openssh':
      ensure => present,
@@ -143,7 +143,7 @@ For the full list of available resource types try:
 
 Creation of ``/etc/motd`` file:
 
-::
+.. code-block:: ruby
 
     file { 'motd':
       path => '/etc/motd',
@@ -151,7 +151,7 @@ Creation of ``/etc/motd`` file:
 
 Start of *httpd* service:
 
-::
+.. code-block:: ruby
 
     service { 'httpd':
       ensure => running,
@@ -245,7 +245,7 @@ This feature allows you to assign specific configurations to specific nodes.
 Node definitions should go in the main manifest. The main manifest can be a single file, or a directory containing
 many files.
 
-::
+.. code-block:: ruby
 
     # <ENVIRONMENTS DIRECTORY>/<ENVIRONMENT>/manifests/site.pp
     node 'www1.example.com' {
@@ -282,7 +282,7 @@ be called in a code elsewhere.
 
 This is a class declaration:
 
-::
+.. code-block:: ruby
 
     class example_class {
         ...
@@ -317,7 +317,7 @@ The **manifests** directory must have a **init.pp** file (called high level clas
 
 So create a ``manifests/init.pp`` file with the following content:
 
-::
+.. code-block:: ruby
 
     class localusers {
         user { 'admin':
@@ -343,7 +343,7 @@ So create a ``manifests/init.pp`` file with the following content:
 Create a new directory: ``manifests/localusers/groups``. This directorory is going to have
 all necesary groups. So create a file ``wheel.pp:`` with the following content:
 
-::
+.. code-block:: ruby
 
    class localusers::groups::wheel {
        group { 'wheel':
@@ -354,7 +354,7 @@ all necesary groups. So create a file ``wheel.pp:`` with the following content:
 
 and another file ``finance.pp`` with a group named *finance*:
 
-::
+.. code-block:: ruby
 
    class localusers::groups::finance {
           group { 'finance':
@@ -379,7 +379,7 @@ Here is where the **tests** directory is used.
 
 Inside ``localusers/tests`` directory, create a ``init.pp`` file:
 
-::
+.. code-block:: ruby
 
     include localusers
     include localusers::group::wheel
@@ -430,7 +430,7 @@ The same is true of ``notify`` and ``subscribe``.
 
 Example:
 
-::
+.. code-block:: ruby
 
     package { 'openssh-server':
         ensure => present,
@@ -445,7 +445,7 @@ Example:
     }
 
 
-::
+.. code-block:: ruby
 
     service { 'sshd':
         ensure  => running,
