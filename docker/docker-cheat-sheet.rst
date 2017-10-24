@@ -441,8 +441,7 @@ the volume_name and the mount point into the container.
 User-defined networks
 ---------------------
 
-You can create your own user-defined networks that better isolate containers. Docker provides some default
-network drivers for creating these networks.
+It is recommended to use user-defined bridge networks to control which containers can communicate with each other, and also to enable automatic DNS resolution of container names to IP addresses (in favor of the deprecated option ``--link``)
 
 The easiest user-defined network to create is a bridge network. This network is similar to the historical,
 default `docker0` network.
@@ -456,4 +455,4 @@ Then you can launch a container in this network, with a fixed-ip using:
 
 .. code-block:: bash
 
-    $ docker run --net my_network --ip 172.18.0.2 ...
+    $ docker run --network my_network --ip 172.18.0.2 ...
