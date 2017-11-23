@@ -206,6 +206,33 @@ To see the output added in real-time, use `-f`
    $ docker logs -f [CONTAINER]
 
 
+Default logging driver
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you do not specify a logging driver, the default is ``json-file``.
+
+To find the current default logging driver for the Docker daemon, ``run docker info`` and search for Logging Driver.
+You can use:
+
+.. code-block:: bash
+
+    $ docker info | grep 'Logging Driver'
+    
+When you start a container, you can configure it to use a different logging driver than the Docker daemon’s default,
+using the ``--log-driver`` flag. If the logging driver has configurable options, you can set them using one or more
+instances of the ``--log-opt <NAME>=<VALUE>`` flag. Even if the container uses the default logging driver, it can use
+different configurable options.
+
+For example:
+
+.. code-block::
+
+    $ docker run -–log-driver json-file --log-opt max-size=10m alpine echo hello world
+
+For more info about options for ``json-file`` driver, check the `Official Documentation
+<https://docs.docker.com/engine/admin/logging/json-file/>`_.
+
+
 Journald logging driver
 ~~~~~~~~~~~~~~~~~~~~~~~
 
