@@ -88,6 +88,9 @@ a new certificate from the CA Puppet master.
 
 Remove certificate request on Puppet Master
 ```````````````````````````````````````````
+Certificate requests are stored in ``/var/lib/puppet/ssl/ca/requests/``. You can remove the .pem files there
+or use the puppet command:
+
 .. code-block:: bash
 
       # puppet ca destroy <NAME>
