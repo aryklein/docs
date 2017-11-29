@@ -86,6 +86,13 @@ a new certificate from the CA Puppet master.
        # puppet agent --test
 
 
+Remove certificate request on Puppet Master
+```````````````````````````````````````````
+.. code-block:: bash
+
+      # puppet ca destroy <NAME>
+
+
 Resource Types
 --------------
 
