@@ -4,6 +4,8 @@ Personal Docker Swarm notes
 Docker Swarm provides native clustering functionality for Docker containers, which turns a group of Docker
 engines into a single, virtual Docker engine.
 
+.. contents::
+
 Concepts
 --------
 
