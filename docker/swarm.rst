@@ -1,6 +1,9 @@
 Personal Docker Swarm notes
 ===========================
 
+These notes were taken from the official Docker site. It's almost a copy-paste of the most important commands.
+If you look for a better reference, please visit the `Docker site <https://docs.docker.com/engine/swarm/>`_.
+
 Docker Swarm provides native clustering functionality for Docker containers, which turns a group of Docker
 engines into a single, virtual Docker engine.
 
@@ -57,3 +60,64 @@ You can run ``docker node ls`` command in a manager node to view information abo
 
 The ``*`` next to the node ID indicates that you’re currently connected on this node.
 Docker Engine swarm mode automatically names the node for the machine host name.
+
+Deploy a service
+----------------
+
+Run the following command on a manager node:
+
+.. code-block:: bash
+
+     $ docker service create --replicas 2 --name helloworld alpine ping docker.com
+     
+- The ``docker service create`` command creates a new service.
+- The ``--name`` flag names the service ``helloworld``.
+- The ``--replicas`` flag specifies the desired state of 2 running instance.
+- The arguments ``alpine ping docker.com`` define the service as an Alpine Linux container
+that executes the command ping docker.com.
+
+You can run ``docker service ls`` to see the list of running services:
+
+.. code-block:: bash
+
+    ary@manager1:~$ docker service ls
+    ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+    7qki5ynei1tc        helloworld          replicated          2/2                 alpine:latest       
+
+You can run ``docker service ps <SERVICE-ID>`` to see which nodes are running the service:
+
+.. code-block:: bash
+
+    ary@manager1:~$ docker service ps helloworld 
+    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR               PORTS
+    rmmzwx8e9gxk        helloworld.1        alpine:latest       worker1             Running             Running about a minute ago                       
+    wxu7a15pl912        helloworld.2        alpine:latest       worker2             Running             Running about a minute ago
+
+
+Also, you can run ``docker ps`` on the node where the task is running to see details about the container
+for the task.
+
+Scale a running service
+-----------------------
+
+In a manager node run the following command to change the desired state of the service running in the swarm:
+
+``$ docker service scale <SERVICE-ID>=<NUMBER-OF-TASKS>``
+
+.. code-block:: bash
+
+    ary@manager1:~$ docker service ps helloworld
+    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    rmmzwx8e9gxk        helloworld.1        alpine:latest       worker1             Running             Running 11 minutes ago                       
+    wxu7a15pl912        helloworld.2        alpine:latest       worker2             Running             Running 11 minutes ago                       
+    
+    ary@manager1:~$ docker service scale helloworld=5
+    helloworld scaled to 5
+    
+    ary@manager1:~$ docker service ps helloworld
+    ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    rmmzwx8e9gxk        helloworld.1        alpine:latest       worker1             Running             Running 11 minutes ago                       
+    wxu7a15pl912        helloworld.2        alpine:latest       worker2             Running             Running 11 minutes ago                       
+    76fz3aa57yzj        helloworld.3        alpine:latest       manager1            Running             Running 3 seconds ago                        
+    stixo2wmxxws        helloworld.4        alpine:latest       manager1            Running             Running 3 seconds ago                        
+    wfzjzx1vthud        helloworld.5        alpine:latest       worker2             Running             Running 3 seconds ago 
