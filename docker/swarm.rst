@@ -121,3 +121,14 @@ In a manager node run the following command to change the desired state of the s
     76fz3aa57yzj        helloworld.3        alpine:latest       manager1            Running             Running 3 seconds ago                        
     stixo2wmxxws        helloworld.4        alpine:latest       manager1            Running             Running 3 seconds ago                        
     wfzjzx1vthud        helloworld.5        alpine:latest       worker2             Running             Running 3 seconds ago 
+
+
+Delete the service running on the swarm
+---------------------------------------
+
+.. code-block:: bash
+
+    $ docker service inspect <SERVICE-ID>
+
+Even though the service no longer exists, the task containers take a few seconds to clean up.
+You can use docker ps on the nodes to verify when the tasks have been removed.
