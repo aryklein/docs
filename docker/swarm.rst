@@ -132,3 +132,59 @@ Delete the service running on the swarm
 
 Even though the service no longer exists, the task containers take a few seconds to clean up.
 You can use docker ps on the nodes to verify when the tasks have been removed.
+
+
+Connect the service to an overlay network
+-----------------------------------------
+
+You can use overlay networks to connect one or more services within the swarm.
+First, create overlay network on a manager node using the ``docker network create`` command with
+the ``--driver overlay`` flag.
+
+.. code-block:: bash
+
+    $ docker network create --driver overlay my-network
+
+After you create an overlay network in swarm mode, all manager nodes have access to the network.
+You can create a new service and pass the ``--network flag`` to attach the service to the overlay network:
+
+.. code-block:: bash
+
+    $ docker service create --replicas 3 --network my-network --name my-web nginx
+
+The swarm extends ``my-network`` to each node running the service.
+You can also connect an existing service to an overlay network using the ``--network-add`` flag.
+
+.. code-block:: bash
+
+    $ docker service update --network-add my-network my-web
+    
+To disconnect a running service from a network, use the --network-rm flag.
+
+.. code-block:: bash
+
+    $ docker service update --network-rm my-network my-web
+ 
+Replicated or Global Services
+-----------------------------
+
+Swarm mode has two types of services: **replicated** and **global**. For **replicated** services,
+you specify the number of replica tasks for the swarm manager to schedule onto available nodes.
+For **global** services, the scheduler places *one task* on each available node that meets the
+service’s placement constraints and resource requirements.
+
+You control the type of service using the ``--mode`` flag. If you don’t specify a mode, the service
+defaults to replicated. For **replicated** services, you specify the number of replica tasks you want
+to start using the ``--replicas`` flag. For example, to start a replicated nginx service with 3 replica tasks:
+
+.. code-block:: bash
+
+    $ docker service create --name my_web --replicas 3 nginx
+
+To start a global service on each available node, pass ``--mode global`` to ``docker service create``.
+Every time a new node becomes available, the scheduler places a task for the global service on the new node.
+For example to start a service that runs alpine on every node in the swarm:
+
+.. code-block:: bash
+
+    $ docker service create --name myservice --mode global alpine sh
