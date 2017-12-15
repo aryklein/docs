@@ -134,6 +134,21 @@ Even though the service no longer exists, the task containers take a few seconds
 You can use docker ps on the nodes to verify when the tasks have been removed.
 
 
+Publish ports
+-------------
+
+When you create a swarm service, you can publish that service's ports to hosts outside the swarm in two ways:
+
+1) You can rely on the routing mesh. When you publish a service port, the swarm makes the service accessible at
+the target port on every node, regardless of whether there is a task for the service running on that node or
+not. This is less complex and is the right choice for many types of services.
+
+2) You can publish a service task's port directly on the swarm node where that service is running.
+This feature is available in Docker 1.13 and higher. This bypasses the routing mesh and provides the maximum
+flexibility, including the ability for you to develop your own routing framework. However, you are responsible
+for keeping track of where each task is running and routing requests to the tasks, and load-balancing across
+the nodes.
+
 Connect the service to an overlay network
 -----------------------------------------
 
