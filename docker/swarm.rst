@@ -128,7 +128,7 @@ Delete the service running on the swarm
 
 .. code-block:: bash
 
-    $ docker service inspect <SERVICE-ID>
+    $ docker service rm <SERVICE-ID>
 
 Even though the service no longer exists, the task containers take a few seconds to clean up.
 You can use docker ps on the nodes to verify when the tasks have been removed.
@@ -165,6 +165,7 @@ To disconnect a running service from a network, use the --network-rm flag.
 
     $ docker service update --network-rm my-network my-web
  
+
 Replicated or Global Services
 -----------------------------
 
