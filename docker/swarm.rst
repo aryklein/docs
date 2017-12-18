@@ -149,6 +149,33 @@ flexibility, including the ability for you to develop your own routing framework
 for keeping track of where each task is running and routing requests to the tasks, and load-balancing across
 the nodes.
 
+1- Publish a service port using the routing mesh
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To publish a service’s ports externally to the swarm, use the ``--publish <PUBLISHED-PORT>:<SERVICE-PORT>`` flag.
+The swarm makes the service accessible at the published port on every swarm node.
+
+.. code-block:: bash
+
+    $ docker service create --name my_web --replicas 3 --publish published=8080,target=80 nginx
+
+Three tasks will run on up to three nodes. You don’t need to know which nodes are running the tasks; connecting
+to port 8080 on any of the 10 nodes will connect you to one of the three nginx tasks
+
+2- Publish a service port directly on the swarm node
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To publish a service's port directly on the node where it is running, use the ``mode=host`` option to the
+``--publish`` flag.
+
+.. code-block:: bash
+
+    $ docker service create --mode global --publish mode=host,target=80,published=8080 --name=nginx nginx:latest
+
+In addition, if you use ``mode=host`` and you do not use the ``--mode=global`` flag on docker service create,
+it will be difficult to know which nodes are running the service in order to route work to them.
+
+
 Connect the service to an overlay network
 -----------------------------------------
 
