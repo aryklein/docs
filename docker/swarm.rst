@@ -231,3 +231,60 @@ For example to start a service that runs alpine on every node in the swarm:
 .. code-block:: bash
 
     $ docker service create --name myservice --mode global alpine sh
+
+
+Give a service access to volumes or bind mounts
+-----------------------------------------------
+
+You can create two types of mounts for services in a swarm, volume mounts or bind mounts. Regardless of which
+type of mount you use, configure it using the ``--mount`` flag when you create a service, or the ``--mount-add``
+or ``--mount-rm`` flag when updating an existing service. The default is a data volume if you don’t specify a type.
+
+Data volumes
+~~~~~~~~~~~~
+
+The preferred method to mount volumes is to use an existing volume.
+
+.. code-block:: bash
+
+    $ docker volume create <VOL-NAME>
+    $ docker service create --mount src=<VOLUME-NAME>,dst=<CONTAINER-PATH> --name myservice <IMAGE>
+ 
+Another method is to create the volume at deployment time when the scheduler dispatches a task,
+just before starting the container:
+
+.. code-block:: bash
+
+    $ docker service create \
+    --mount type=volume,src=<VOLUME-NAME>,dst=<CONTAINER-PATH>,volume-driver=<DRIVER>,volume-opt=<KEY0>=<VALUE0>,volume-opt=<KEY1>=<VALUE1> \
+    --name myservice \
+    <IMAGE>
+
+If your volume driver accepts a comma-separated list as an option, you must escape the value from the outer CSV parser.
+To escape a ``volume-opt``, surround it with double quotes (``"``) and surround the entire mount parameter with single
+quotes (``'``).
+
+For example, the local driver accepts mount options as a comma-separated list in the o parameter. This example shows
+the correct way to escape the list.
+
+.. code-block:: bash
+
+    $ docker service create \
+    --mount 'type=volume,src=<VOLUME-NAME>,dst=<CONTAINER-PATH>,volume-driver=local,volume-opt=type=nfs,volume-opt=device=<nfs-server>:<nfs-path>,"volume-opt=o=addr=<nfs-address>,vers=4,soft,timeo=180,bg,tcp,rw"'
+    --name myservice \
+    <IMAGE>
+
+Bind mounts
+~~~~~~~~~~~
+
+Bind mounts are file system paths from the host where the scheduler deploys the container for the task. Docker mounts
+the path into the container. The filesystem path must exist before the swarm initializes the container for the task.
+
+*Important*: If you bind mount a host path into your service's containers, the path must exist on every swarm node.
+
+.. code-block:: bash
+
+    $ docker service create \
+    --mount type=bind,src=<HOST-PATH>,dst=<CONTAINER-PATH> \
+    --name myservice \
+    <IMAGE>
