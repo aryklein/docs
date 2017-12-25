@@ -1,0 +1,83 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+users:
+  - default
+  - name: jdoe
+    gecos: John Doe
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+    passwd: <salted shadow password>
+    ssh_authorized_keys:
+      - ssh-key1
+      - ssh-key2
+    lock-passwd: false
+    groups: sudo
+
+write_files:
+  - path: /etc/systemd/system/nat.service
+    content: |
+      [Unit]
+      Requires=network.target
+      After=network.target
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/local/sbin/nat.sh start
+      ExecStop=/usr/local/sbin/nat.sh stop
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /usr/local/sbin/nat.sh
+    permissions: "0744"
+    owner: "root"
+    content: |
+      #!/bin/bash
+
+      function start {
+
+      sysctl -q -w net.ipv4.ip_forward=1 net.ipv4.conf.eth0.send_redirects=0
+      iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+      sysctl net.ipv4.ip_forward net.ipv4.conf.eth0.send_redirects
+      
+      }
+
+      function stop {
+ 
+      sysctl -q -w net.ipv4.ip_forward=0 net.ipv4.conf.eth0.send_redirects=1
+      sysctl net.ipv4.ip_forward net.ipv4.conf.eth0.send_redirects
+      iptables -t nat -F
+      iptables -t nat -X
+      iptables -t nat -Z
+
+      }
+      
+      case "$1" in
+        start)
+          start
+          ;;
+        stop)
+          stop
+          ;;
+        restart)
+          stop
+          start
+          ;;
+        *)
+          echo "Usage: $0 {start|stop|restart}"
+          exit 1
+          ;;
+      esac
+
+      exit 0
+
+runcmd:
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication yes/' /etc/ssh/sshd_config
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - systemctl restart ssh
+  - systemctl enable nat.service
+  - systemctl start nat.service
