@@ -37,4 +37,19 @@ This cloud-config updates all packages, creates a new user, creates a new system
 that will set up the instance as a NAT instance. Besides it changes the SSH configuration and it enables the new 
 systemd unit.
 
+For this instance you will need a Security Group that allows Inbound traffic you want to perform NAT and allows
+all Outbound traffi.
+For example:
+
+- Inbound - allow HTTP, HTTPS and ALL ICMP from private subnet and SSH from your admin machine.
+- Outbound - allow all to dst all
+
+
+As it is a Router/NAT instance that moves traffic between private subnet and Internet, you need to disable 
+"Source/dest. check". Go to the EC2 Service, NETWORK & SECURITY and then Network Interfaces. Select the NAT's network
+interface and then Actions, Change Source/dest. Check: disable
+
+More information about NAT instance here:
+
+http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html
 
