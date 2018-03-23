@@ -138,7 +138,7 @@ Apply the manifest:
 
 ::
 
-    $ kubectl apply -f manifest-pod.yaml
+    $ kubectl apply -f pod-manifest.yaml
 
 Listing and describing Pods
 +++++++++++++++++++++++++++
@@ -147,3 +147,41 @@ Listing and describing Pods
 
     $ kubectl get pods
     $ kubectl describe pods POD-NAME
+
+Deleting a Pod
+++++++++++++++
+
+::
+
+    $ kubectl delete pods/kuard
+    $ # OR
+    $ kubectl delete -f pod-manifest.yaml
+    
+Access into a Pod
++++++++++++++++++
+
+Without exposing the service to the world, you can reach the Pod using port-forward option
+
+::
+
+    $ kubectl port-forward POD-NAME 8080:8080
+
+Using Volumes with Pods
++++++++++++++++++++++++
+
+To understand volumes, please refer to the following link:
+
+https://kubernetes.io/docs/concepts/storage/volumes/
+
+Service Discovery
++++++++++++++++++
+
+Use ``kubectl expose`` to create a service
+
+::
+
+    $ kubectl run webserver --image=nginx --replicas=3 --port=8080 --labels="ver=1,app=webserver,env=prod"
+    $ kubectl expose deployment webserver
+
+This service is assigned a new type of virtual IP called a **cluster IP** . This is a special IP address the
+system will load-balance across all of the pods that are identified by the selector.
