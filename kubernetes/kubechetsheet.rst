@@ -6,7 +6,9 @@ Getting started with Google Cloud
 
 1) Download the the SDK app: ``google-cloud-sdk``
 
-2) Initialize or reinitialize gcloud::
+2) Initialize or reinitialize gcloud
+
+::
 
     $ gcloud init
 
@@ -29,7 +31,9 @@ accounts and/or projects.
 
 Run ``gcloud topic configurations`` to learn more.
 
-4) Create the Kubernetes cluster using Dashboard or gcloud::
+4) Create the Kubernetes cluster using Dashboard or gcloud
+
+::
 
     $ gcloud container clusters create cluster-1 --zone us-east1-b --machine-type f1-micro --num-nodes 3 --enable-autoupgrade
     $ gcloud container clusters list
@@ -47,25 +51,82 @@ from a new workstation.*
 
     $ gcloud container clusters get-credentials CLUSTER-NAME
 
-6) Install kubectl binary on your system using gcloud::
+6) Install kubectl binary on your system using gcloud
+
+::
 
     $ gcloud components install kubectl
 
-Working with Kubernetes (kubectl command)
------------------------------------------
+
+Working with Kubernetes
+-----------------------
 
 A list of useful commands
 
 Checking Cluster Status
 +++++++++++++++++++++++
 
-Get a simple diagnostic for the cluster. This is a good way to verify that your cluster is generally healthy::
+Get a simple diagnostic for the cluster. This is a good way to verify that your cluster is generally healthy
+
+::
 
     $ kubectl get componentstatuses
 
-Listing Kubernetes Worker nodes
-+++++++++++++++++++++++++++++++
+Listing Kubernetes Nodes
+++++++++++++++++++++++++
+
+Get a list of nodes
 
 ::
   
     $ kubectl get nodes
+
+Get more information about a specific node
+
+::
+  
+    $ kubectl describe node NODE-NAME
+
+Namespaces
+++++++++++
+
+Kubernetes uses namespaces to organize objects in the cluster. You can think of each namespace as a folder
+that holds a set of objects. By default, the ``kubectl command-line`` tool interacts with the default namespace.
+If you want to use a different namespace, you can pass kubectl the ``--namespace`` flag.
+
+Pod
++++
+
+A Pod is a collection of containers and volumes running in the same execution environment. All containers in a Pod always run on the same machine.
+
+Logs
+++++
+
+Getting a Pod logs:
+
+::
+
+    $ kubectl logs POD-NAME
+
+If there are multiple containers in a pod, you can choose the container to view using the -c flag.
+
+Execute a command in a container
+++++++++++++++++++++++++++++++++
+
+You can also use the exec command to execute a command in a running container
+
+::
+
+    $ kubectl exec -it POD-NAME -- sh
+
+Creating a new Pod
+++++++++++++++++++
+
+Create a Pod manifest using YAML or JSON, but YAML is generally preferred because it is slightly more human-editable
+and has the ability to add comments.
+
+Apply the manifest:
+
+::
+
+    $ kubectl apply -f manifest-pod.yaml
