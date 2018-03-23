@@ -122,6 +122,15 @@ You can also use the exec command to execute a command in a running container
 Creating a new Pod
 ++++++++++++++++++
 
+The simplest way to create a Pod is via the imperative ``kubectl run`` command.
+
+::
+
+    $ kubectl run webserver --image=nginx
+
+This manner of creating a Pod actually creates it via Deployment and ReplicaSet objects. The other way is using
+a pod manifest
+
 Create a Pod manifest using YAML or JSON, but YAML is generally preferred because it is slightly more human-editable
 and has the ability to add comments.
 
@@ -130,3 +139,11 @@ Apply the manifest:
 ::
 
     $ kubectl apply -f manifest-pod.yaml
+
+Listing and describing Pods
++++++++++++++++++++++++++++
+
+::
+
+    $ kubectl get pods
+    $ kubectl describe pods POD-NAME
