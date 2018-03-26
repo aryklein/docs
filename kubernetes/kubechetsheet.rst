@@ -180,8 +180,9 @@ Use ``kubectl expose`` to create a service
 
 ::
 
-    $ kubectl run webserver --image=nginx --replicas=3 --port=8080 --labels="ver=1,app=webserver,env=prod"
+    $ kubectl run webserver --image=nginx --replicas=3 --port=80 --labels="ver=1,app=webserver,env=prod"
     $ kubectl expose deployment webserver
+    $ kubectl get service
 
-This service is assigned a new type of virtual IP called a **cluster IP** . This is a special IP address the
+This service is assigned a new type of virtual IP called a **cluster IP**. This is a special IP address the
 system will load-balance across all of the pods that are identified by the selector.
