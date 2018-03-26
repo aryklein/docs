@@ -215,5 +215,65 @@ reach any node in the cluster you can contact a service.
 
 Kubernetes will assign a random port to all nodes where the service is running
 
+Load Balancer
++++++++++++++
 
-   
+If there is support from the cloud that you are running on, you can use the LoadBalancer type. This builds on
+``NodePort`` by additionally configuring the cloud to create a new load balancer and direct it at nodes
+in your cluster.
+
+::
+
+    $ kubectl expose deployment webserver --type=LoadBalancer
+    $ # Or you can use 'edit' to change the type
+    $ kubectl edit webserver
+
+Endpoints
++++++++++
+
+To get the IPs of the Pods you can use
+
+::
+
+    $ kubectl get endpoints
+    $ kubectl get endpoints webserver
+
+ReplicaSet
+++++++++++
+
+A ReplicaSet acts as a cluster-wide Pod manager, ensuring that the right types and number of Pods are running
+at all times. 
+
+ReplicaSets create and manage Pods but they do not own the Pods they create.
+
+The ReplicaSet controller will create new Pods. The Pods are created using a Pod template that is contained in
+the ReplicaSet specification. The Pods are created in exactly the same manner as when you created a Pod from a
+YAML file. But instead of using a file, the Kubernetes ReplicaSet controller creates and submits a Pod manifest
+based on the Pod template directly to the API server.
+
+*Creating a ReplicaSet*:
+
+.. code-block:: yaml
+
+    apiVersion: extensions/v1beta1
+    kind: ReplicaSet
+    metadata:
+        name: webserver
+    spec:
+        replicas: 3
+        template:
+             metadata:
+                 labels:
+                     app: webserver
+                     version: "2"
+             spec:
+                 containers:
+                     - name: webserver
+                       image: "nginx"
+
+::
+
+    $ kubectl apply -f rs-test.yaml
+    $ kubectl describe rs rs-test
+    
+    
