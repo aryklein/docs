@@ -186,3 +186,34 @@ Use ``kubectl expose`` to create a service
 
 This service is assigned a new type of virtual IP called a **cluster IP**. This is a special IP address the
 system will load-balance across all of the pods that are identified by the selector.
+
+Internal DNS
+++++++++++++
+
+When you spin up a pod, you Kubernetes will create a private DNS address that resolves with the cluster IP.
+In this example it is: ``webserver.default.svc.cluster.local``
+
+``webserver``: the name of the service.
+
+``default``: the name of the namespace where the service is running.
+
+``svc``: this is because it's a service.
+
+``cluster.local``: the base domain name for the cluster.
+
+NodePort
+++++++++
+
+The IPs for pods and the cluster IP are only reachable from within the cluster.
+If you need to reach the Pod from outside, you can use the ``NodePort`` option. With this feature, if you can
+reach any node in the cluster you can contact a service.
+
+::
+
+    $ kubectl expose deployment webserver --type=NodePort
+    $ kubectl describe service webserver
+
+Kubernetes will assign a random port to all nodes where the service is running
+
+
+   
