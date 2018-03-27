@@ -275,5 +275,26 @@ based on the Pod template directly to the API server.
 
     $ kubectl apply -f rs-test.yaml
     $ kubectl describe rs rs-test
-    
-    
+
+**Delete a ReplicaSet:**
+
+By default, this will delete the Pods that are managed by the ReplicaSet:
+
+::
+
+    $ kubectl delete rs webserver
+
+Horizontal pod autoscaling (HPA)
+++++++++++++++++++++++++++++++++
+
+The following command scale automatically based on the CPU usage:
+
+::
+
+    $ kubectl autoscale rs webserver --min=2 --max=5 --cpu-percent=80
+
+This command creates an autoscaler that scales between 2 and 5 replicas with a CPU threshold of 80%.
+
+::
+
+    $ kubectl get hpa
