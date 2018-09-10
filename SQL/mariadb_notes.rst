@@ -44,7 +44,12 @@ Dumping ALL databases:
   $ mysqldump --all-databases -uUSER -pPASSWORD > filename.sql
 
 
+Dumping a database to a remote host using SSH:
 
+::
+
+  $ mysqldump -uUSER -pPASSWORD [database_name] | ssh USER@REMOTE_HOST 'cat > /some/path/database.sql'
+  
 
 Restoring
 ---------
