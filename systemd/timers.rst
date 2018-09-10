@@ -47,6 +47,9 @@ Now we have to define in the same directory (``/etc/systemd/system``) the timer:
         
     [Timer]
     OnCalendar=*-*-* 01:05:00
+    
+    [Install]
+    WantedBy=timers.target
 
 Then run:
 
