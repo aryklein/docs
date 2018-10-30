@@ -93,7 +93,7 @@ won't be able to see the socket file. To find out if it is running into a jail, 
 
 .. code-block:: bash
 
-    $ pid = `ps -ef | grep postfix | grep pickup | awk '{print $2}'`
+    $ pid=`ps -ef | grep postfix | grep pickup | awk '{print $2}'`
     $ sudo ls -l /proc/$pid/root
 
 
