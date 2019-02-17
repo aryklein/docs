@@ -124,7 +124,20 @@ From the PostgreSQL interface (``psql``) to create new database with some role a
 
     postgres=# CREATE DATABASE <db_name> OWNER <role_name>;
 
-If no owener is specified, ``postgres`` user will be the owner. 
+If no owener is specified, ``postgres`` user will be the owner.
+
+To list all databases, run:
+
+.. code-block:: sql
+
+    postgres=# \l+
+
+To connect to the new databases, run:
+
+.. code-block:: sql
+
+    postgres=# \c <db_name>
+    postgres=# \conninfo
 
 
 How to Grant Permissions in PostgreSQL
@@ -155,7 +168,6 @@ the same syntax as ``GRANT``:
 .. code-block:: sql
 
     postgres=# REVOKE permission_type ON table_name FROM user_name;
-
 
 Create a readonly user
 ----------------------
