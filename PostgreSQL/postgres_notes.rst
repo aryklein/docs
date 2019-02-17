@@ -174,3 +174,14 @@ Create a readonly user
 
 Read this article:
 https://marcyes.com/2016/0922-messing-with-postgresql-users-and-permissions/
+
+
+Reload Postgres configuration
+-----------------------------
+
+If some Postgres configuration file was changed, to reload the configuration (without restarting)
+the service run:
+
+.. code-block:: sql
+
+   postgres=# SELECT pg_reload_conf();
